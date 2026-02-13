@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prog. Web | F. Telemática</title>
+    <!-- Fuentes para estilo Developer -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;600&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* * =========================================
+         * ESTILO: DEVELOPER / DARK MODE (UCOL THEME)
+         * =========================================
+         */
+        :root {
+            --bg-color: #0d1117;       /* Fondo oscuro */
+            --card-bg: #161b22;        /* Fondo tarjetas */
+            --text-main: #c9d1d9;      /* Texto principal */
+            --text-muted: #8b949e;     /* Texto secundario */
+            --accent: #58a6ff;         /* Azul dev */
+            --ucol-green: #90c954;     /* Verde alusivo (ajustado para dark mode) */
+            --ucol-orange: #d69d30;    /* Naranja alusivo */
+            --border: #30363d;         /* Bordes */
+            --font-mono: 'Fira Code', 'Consolas', 'Courier New', monospace;
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            line-height: 1.6;
+            scroll-behavior: smooth;
+        }
+
+        /* UTILIDADES */
+        h1, h2, h3, .mono-font, .date-badge {
+            font-family: var(--font-mono);
+        }
+
+        a {
+            text-decoration: none;
+            color: var(--accent);
+            transition: 0.2s;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            text-decoration: none !important;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-primary {
+            background-color: #238636;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-primary:hover {
+            background-color: #2ea043;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--text-muted);
+            background-color: var(--border);
+        }
+
+        /* HEADER */
+        header {
+            background-color: rgba(13, 17, 23, 0.95);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 15px 0;
+            backdrop-filter: blur(10px);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-family: var(--font-mono);
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-main);
+        }
+
+        .logo-box {
+            background-color: white;
+            color: #000;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-family: var(--font-mono);
+        }
+
+        .nav-links a:hover {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            padding: 80px 0 60px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .terminal-window {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Decoración de botones de ventana estilo Mac */
+        .terminal-window::before {
+            content: "•••";
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 24px;
+            letter-spacing: 2px;
+            line-height: 0;
+            color: var(--border);
+        }
+
+        .cmd-line {
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 0.95rem;
+        }
+
+        .cmd-line.success { color: var(--ucol-green); }
+        .cmd-line::before {
+            content: "$ ";
+            color: var(--accent);
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin: 25px 0 10px 0;
+            background: linear-gradient(90deg, #fff, #a0a0a0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--ucol-green);
+            font-family: var(--font-mono);
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin-bottom: 30px;
+        }
+
+        /* SECCIONES */
+        section {
+            padding: 70px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-main);
+        }
+
+        .section-title::before {
+            content: "#";
+            color: var(--ucol-orange);
+        }
+
+        /* GRID TEMARIO */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        .unit-badge {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            background: rgba(56, 139, 253, 0.15);
+            color: var(--accent);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .date-badge {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            color: var(--text-main);
+        }
+
+        .topic-list {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .topic-list li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .topic-list li::before {
+            content: ">";
+            position: absolute;
+            left: 0;
+            color: var(--ucol-green);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+
+        /* EVALUACIONES (Sidebar style within grid) */
+        .eval-dates {
+            background: rgba(210, 153, 34, 0.1); /* Tinte naranja */
+            border: 1px solid rgba(210, 153, 34, 0.4);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+        
+        .eval-dates strong { color: var(--ucol-orange); }
+
+        /* TABLA DE RECURSOS */
+        .table-container {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #21262d;
+            text-align: left;
+            padding: 15px;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text-muted);
+        }
+
+        tr:last-child td { border-bottom: none; }
+        
+        tr:hover td {
+            background-color: rgba(255,255,255,0.03);
+            color: var(--text-main);
+        }
+
+        .status-pill {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-ready { background: rgba(46, 160, 67, 0.2); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
+        .status-pending { background: rgba(139, 148, 158, 0.2); color: #8b949e; border: 1px solid var(--border); }
+        
+        /* Botones específicos para la tabla */
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-right: 10px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .action-html { color: var(--accent); }
+        .action-html:hover { color: #fff; }
+        
+        .action-pdf { color: var(--text-muted); font-size: 0.8rem; }
+        .action-pdf:hover { color: var(--text-main); }
+
+        /* FOOTER */
+        footer {
+            padding: 50px 0;
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-info p {
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; }
+            .card-header { flex-direction: column; align-items: flex-start; gap: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAV -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img alt="" src="img/UdeC_2LC Blanco.png" style="margin: 0px; height: 20%; width: 20%;">
+                <span>F. Telemática / Ing. Software</span>
+            </div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#inicio">~/inicio</a></li>
+                    <li><a href="#temario">~/syllabus</a></li>
+                    <li><a href="#recursos">~/recursos</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section id="inicio" class="hero">
+        <div class="container">
+            <div class="terminal-window">
+                <!-- Información extraída del PDF -->
+                <span class="cmd-line">source /etc/profile.d/profesor_jaramillo.sh</span>
+                <span class="cmd-line">loading semester_config... <span style="color:var(--ucol-orange)">Febrero - Agosto 2026</span></span>
+                <span class="cmd-line success">Done. System ready.</span>
+                <br>
+                
+                <h1 class="mono-font">Programación Para Web</h1>
+                <p class="hero-subtitle">4º Semestre | Grupo E</p>
+                
+                <p>
+                    Bienvenido al repositorio oficial del curso. Aquí aprenderás a construir soluciones de software de extremo a extremo, 
+                    desde el diseño <strong>FrontEnd</strong> hasta la arquitectura <strong>BackEnd</strong> y despliegue en <strong>Azure</strong>.
+                </p>
+                
+                <div style="margin-top: 25px; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="#temario" class="btn btn-primary">Ver Syllabus</a>
+                    <a href="https://github.com" target="_blank" class="btn btn-outline">Repositorio GitHub</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEMARIO -->
+    <section id="temario">
+        <div class="container">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom: 30px;">
+                <h2 class="section-title" style="margin-bottom:0">Contenido del Curso</h2>
+                <!-- Fechas de Examen extraídas del PDF -->
+                <div class="eval-dates">
+                    <span>📅 Próximo Parcial: <strong>06/03</strong> (U1)</span>
+                </div>
+            </div>
+
+            <div class="grid">
+                <!-- UNIDAD 1 -->
+                <article class="card">
+                    <div class="card-header">
+                        <span class="unit-badge">Unidad I</span>
+                        <span class="date-badge">[03/02 - 02/03]</span>
+                    </div>
+                    <h3>Introducción a la Web</h3>
+                    <ul class="topic-list">
+                        <li>Historia de Internet y la Web</li>
+                        <li>Modelo Cliente-Servidor</li>
+                        <li>Diferencias FrontEnd vs BackEnd</li>
+                        <li>Protocolos HTTP/HTTPS</li>
+                    </ul>
+                </article>
+
+                <!-- UNIDAD 2 -->
+                <article class="card">
+                    <div class="card-header">
+                        <span class="unit-badge">Unidad II</span>
+                        <span class="date-badge">[07/03 - 09/04]</span>
+                    </div>
+                    <h3>Infraestructura Web</h3>
+                    <ul class="topic-list">
+                        <li>HTML5 Semántico y Estándares</li>
+                        <li>CSS3 y Diseño Responsivo</li>
+                        <li>Entorno: Visual Studio 2022</li>
+                        <li>Introducción a <strong>Blazor</strong></li>
+                    </ul>
+                </article>
+
+                <!-- UNIDAD 3 -->
+                <article class="card">
+                    <div class="card-header">
+                        <span class="unit-badge">Unidad III</span>
+                        <span class="date-badge">[11/04 - 24/05]</span>
+                    </div>
+                    <h3>BD y Distribución</h3>
+                    <ul class="topic-list">
+                        <li>Entity Framework & SQL</li>
+                        <li>Servicios Web (APIs)</li>
+                        <li>Formato JSON</li>
+                        <li>Despliegue en <strong>Microsoft Azure</strong></li>
+                    </ul>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- RECURSOS -->
+    <section id="recursos">
+        <div class="container">
+            <h2 class="section-title">Material de Clase</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 15%">Semana</th>
+                            <th>Tema / Recurso</th>
+                            <th style="width: 15%">Estado</th>
+                            <th style="width: 25%">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="mono-font">Sem 01</td>
+                            <td>Presentación: Encuadre y Evaluación</td>
+                            <td><span class="status-pill status-ready">Disponible</span></td>
+                            <td>
+                                <!-- ENLACE A TU SLIDE HTML -->
+                                <a href="slides/Sesion1_F.html" target="_blank" class="action-link action-html">
+                                    ▶ Ver Slide (Web)
+                                </a>
+                            </td>
+                        </tr>
+                        <!-- NUEVO RECURSO AGREGADO -->
+                        <tr>
+                            <td class="mono-font">Sem 01</td>
+                            <td>Guía: Características de las TIC</td>
+                            <td><span class="status-pill status-ready">Disponible</span></td>
+                            <td>
+                                <a href="slides/Características de las TIC.pdf" download class="action-link action-pdf">
+                                    📄 Descargar PDF
+                                </a>
+                            </td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <div class="container footer-info">
+            <p><strong>Programación Para Web</strong> | Semestre Feb-Ago 2026</p>
+            <p>Prof. Jaramillo Velasco Ricardo</p>
+            <p style="margin-top: 20px; font-size: 0.8rem; opacity: 0.5;">
+                Universidad de Colima - Facultad de Telemática<br>
+                &copy; <span id="year"></span> Ingeniería de Software
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
+</body>
+</html>

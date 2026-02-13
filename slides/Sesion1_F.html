@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programación Web - Sesión 1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@400;600;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-dark: #0d1117;
+            --bg-code: #161b22;
+            --bg-card: #1c2128;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-purple: #bc8cff;
+            --accent-orange: #ffa657;
+            --accent-pink: #f778ba;
+            --syntax-tag: #7ee787;
+            --syntax-attr: #79c0ff;
+            --syntax-string: #a5d6ff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        /* CODE FONT */
+        .code {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* SLIDE CONTAINER */
+        .slide {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide.active {
+            display: grid;
+            grid-template-columns: 60px 1fr;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* LINE NUMBERS (simula editor de código) */
+        .line-numbers {
+            background: var(--bg-code);
+            border-right: 1px solid var(--border-color);
+            padding: 60px 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: var(--text-secondary);
+            user-select: none;
+        }
+
+        /* CONTENT AREA */
+        .content {
+            padding: 60px 80px;
+            padding-bottom: 180px; /* Mucho espacio extra para controles */
+            overflow-y: auto;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* HTML TAGS DECORATION */
+        .html-tag {
+            font-family: 'Fira Code', monospace;
+            color: var(--syntax-tag);
+            font-size: 0.9em;
+            opacity: 0.4;
+            position: absolute;
+        }
+
+        .html-tag.closing {
+            color: var(--syntax-tag);
+        }
+
+        /* HEADERS */
+        h1 {
+            font-size: 4.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        h1::before {
+            content: '<h1>';
+            position: absolute;
+            top: -25px;
+            left: 0;
+            font-size: 0.3em;
+            color: var(--syntax-tag);
+            font-family: 'Fira Code', monospace;
+            font-weight: 400;
+        }
+
+        h1::after {
+            content: '</h1>';
+            position: absolute;
+            bottom: -25px;
+            right: 0;
+            font-size: 0.3em;
+            color: var(--syntax-tag);
+            font-family: 'Fira Code', monospace;
+            font-weight: 400;
+        }
+
+        h2 {
+            font-size: 3.5em;
+            font-weight: 800;
+            color: var(--accent-blue);
+            margin-bottom: 40px;
+            position: relative;
+            padding-left: 20px;
+            border-left: 5px solid var(--accent-blue);
+        }
+
+        h3 {
+            font-size: 2em;
+            color: var(--accent-green);
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        p, li {
+            font-size: 1.4em;
+            line-height: 1.8;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        /* CODE BLOCK */
+        .code-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 30px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2em; /* Aumentado de 1.1em */
+            line-height: 1.8;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: -12px;
+            right: 15px;
+            background: var(--bg-dark);
+            padding: 2px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .code-line {
+            display: block;
+        }
+
+        .code-line .tag { color: var(--syntax-tag); }
+        .code-line .attr { color: var(--syntax-attr); }
+        .code-line .string { color: var(--syntax-string); }
+        .code-line .keyword { color: var(--accent-purple); }
+        .code-line .comment { color: var(--text-secondary); font-style: italic; }
+
+        /* CARDS */
+        .grid {
+            display: grid;
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card.final {
+            margin-bottom: 60px; /* Extra espacio si está al final */
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 20px 60px rgba(88, 166, 255, 0.3);
+        }
+
+        .card h4 {
+            color: var(--accent-blue);
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        /* TECH STACK VISUAL */
+        .tech-stack {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .tech-item {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .tech-item:hover {
+            transform: scale(1.1) rotate(2deg);
+            border-color: var(--accent-green);
+            box-shadow: 0 15px 40px rgba(63, 185, 80, 0.4);
+        }
+
+        .tech-emoji {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .tech-item:nth-child(1) .tech-emoji { animation-delay: 0s; }
+        .tech-item:nth-child(2) .tech-emoji { animation-delay: 0.2s; }
+        .tech-item:nth-child(3) .tech-emoji { animation-delay: 0.4s; }
+        .tech-item:nth-child(4) .tech-emoji { animation-delay: 0.6s; }
+
+        .tech-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* BROWSER WINDOW MOCKUP */
+        .browser-window {
+            background: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 30px 0;
+        }
+
+        .browser-header {
+            background: var(--bg-dark);
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .browser-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .browser-dot.red { background: #ff5f56; }
+        .browser-dot.yellow { background: #ffbd2e; }
+        .browser-dot.green { background: #27c93f; }
+
+        .browser-content {
+            padding: 30px;
+            min-height: 200px;
+        }
+
+        /* TIMELINE */
+        .timeline {
+            margin: 40px 0;
+            position: relative;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 35px;
+            position: relative;
+        }
+
+        .timeline-marker {
+            min-width: 60px;
+            height: 60px;
+            background: var(--bg-card);
+            border: 3px solid var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--accent-blue);
+            z-index: 1;
+        }
+
+        .timeline-content {
+            flex: 1;
+            background: var(--bg-card);
+            padding: 20px 25px;
+            border-radius: 8px;
+            border-left: 3px solid var(--accent-blue);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 30px rgba(88, 166, 255, 0.2);
+        }
+
+        /* EVALUATION BOXES */
+        .eval-box {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 40px 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .eval-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .eval-box:hover::before {
+            opacity: 0.1;
+        }
+
+        .eval-box:hover {
+            transform: translateY(-10px) scale(1.05);
+            border-color: var(--accent-orange);
+            box-shadow: 0 20px 50px rgba(255, 166, 87, 0.4);
+        }
+
+        .eval-percent {
+            font-size: 5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-orange), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .eval-label {
+            font-size: 1.5em;
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-top: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* VS CODE STYLE BADGE */
+        .badge {
+            display: inline-block;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .badge-blue {
+            background: rgba(88, 166, 255, 0.2);
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+        }
+
+        .badge-green {
+            background: rgba(63, 185, 80, 0.2);
+            color: var(--accent-green);
+            border: 1px solid var(--accent-green);
+        }
+
+        .badge-orange {
+            background: rgba(255, 166, 87, 0.2);
+            color: var(--accent-orange);
+            border: 1px solid var(--accent-orange);
+        }
+
+        .badge-purple {
+            background: rgba(188, 140, 255, 0.2);
+            color: var(--accent-purple);
+            border: 1px solid var(--accent-purple);
+        }
+
+        /* IA COMPARISON */
+        .ia-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin: 40px 0;
+        }
+
+        .ia-box {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 35px;
+            border: 2px solid var(--border-color);
+        }
+
+        .ia-box.allowed {
+            border-color: var(--accent-green);
+            box-shadow: 0 0 30px rgba(63, 185, 80, 0.2);
+        }
+
+        .ia-box.forbidden {
+            border-color: #f85149;
+            box-shadow: 0 0 30px rgba(248, 81, 73, 0.2);
+        }
+
+        .ia-box h3 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+
+        .ia-box.allowed h3 { color: var(--accent-green); }
+        .ia-box.forbidden h3 { color: #f85149; }
+
+        .ia-box ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ia-box li {
+            padding: 12px 0;
+            padding-left: 35px;
+            position: relative;
+            font-size: 1.3em;
+        }
+
+        .ia-box.allowed li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-green);
+            font-weight: 900;
+            font-size: 1.2em;
+        }
+
+        .ia-box.forbidden li::before {
+            content: '✕';
+            position: absolute;
+            left: 0;
+            color: #f85149;
+            font-weight: 900;
+            font-size: 1.2em;
+        }
+
+        /* PROJECT DIAGRAM */
+        .org-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            margin: 40px 0;
+            margin-bottom: 100px; /* Espacio extra para evitar controles */
+            align-items: center;
+        }
+
+        .org-level {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .org-node {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px 30px;
+            min-width: 200px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .org-node::after {
+            content: '↓';
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2em;
+            color: var(--border-color);
+        }
+
+        .org-level:last-child .org-node::after {
+            display: none;
+        }
+
+        .org-node:hover {
+            border-color: var(--accent-purple);
+            transform: scale(1.05);
+        }
+
+        .org-node.corporate {
+            border-color: var(--accent-purple);
+            background: rgba(188, 140, 255, 0.1);
+        }
+
+        .org-node.regional {
+            border-color: var(--accent-blue);
+            background: rgba(88, 166, 255, 0.1);
+        }
+
+        .org-node.branch {
+            border-color: var(--accent-green);
+            background: rgba(63, 185, 80, 0.1);
+        }
+
+        /* NAVIGATION */
+        .controls {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 10000;
+            background: rgba(13, 17, 23, 0.95);
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .controls button {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .controls button:hover {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--bg-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(88, 166, 255, 0.4);
+        }
+
+        .slide-number {
+            position: fixed;
+            bottom: 30px;
+            right: 40px;
+            font-family: 'Fira Code', monospace;
+            color: var(--text-secondary);
+            font-size: 18px;
+            z-index: 10000;
+            background: rgba(13, 17, 23, 0.95);
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        /* CENTER CONTENT */
+        .center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 80vh;
+            text-align: center;
+        }
+
+        /* HIGHLIGHT */
+        .highlight {
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+
+        .accent { color: var(--accent-blue); font-weight: 600; }
+        .success { color: var(--accent-green); font-weight: 600; }
+        .warning { color: var(--accent-orange); font-weight: 600; }
+
+        /* ANIMATIONS */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulse {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        /* TABLE */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+        }
+
+        th {
+            background: var(--bg-card);
+            color: var(--accent-blue);
+            padding: 20px;
+            font-size: 1.3em;
+            border: 1px solid var(--border-color);
+            font-weight: 700;
+        }
+
+        td {
+            background: var(--bg-code);
+            color: var(--text-primary);
+            padding: 20px;
+            font-size: 1.2em;
+            border: 1px solid var(--border-color);
+        }
+
+        tr:hover td {
+            background: var(--bg-card);
+        }
+
+        /* QR PLACEHOLDER */
+        .qr-placeholder {
+            width: 350px;
+            height: 350px;
+            background: var(--bg-card);
+            border: 3px dashed var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8em;
+            color: var(--text-secondary);
+            font-family: 'Fira Code', monospace;
+            margin: 40px auto;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .slide.active {
+                grid-template-columns: 40px 1fr;
+            }
+
+            .content {
+                padding: 40px 50px;
+                padding-bottom: 200px; /* Aún más espacio en móvil */
+            }
+
+            h1 { font-size: 3.5em; }
+            h2 { font-size: 2.8em; }
+            h3 { font-size: 1.8em; }
+            p, li { font-size: 1.2em; }
+
+            .grid-2, .grid-3, .grid-4, .tech-stack, .ia-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .org-diagram {
+                margin-bottom: 120px; /* Más espacio en móvil */
+            }
+
+            .controls {
+                bottom: 20px;
+                padding: 12px 20px;
+            }
+
+            .controls button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .slide-number {
+                bottom: 20px;
+                right: 20px;
+                padding: 10px 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SLIDE 1: PORTADA CON CÓDIGO -->
+    <div class="slide active">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+            <div>16</div><div>17</div><div>18</div><div>19</div><div>20</div>
+        </div>
+        <div class="content center">
+            <div class="code-block" data-lang="HTML" style="width: 100%; max-width: 1200px;">
+                <span class="code-line"><span class="tag">&lt;!DOCTYPE</span> <span class="attr">html</span><span class="tag">&gt;</span></span>
+                <span class="code-line"><span class="tag">&lt;html</span> <span class="attr">lang</span>=<span class="string">"es"</span><span class="tag">&gt;</span></span>
+                <span class="code-line">  <span class="tag">&lt;head&gt;</span></span>
+                <span class="code-line">    <span class="tag">&lt;title&gt;</span>Programación para Web<span class="tag">&lt;/title&gt;</span></span>
+                <span class="code-line">  <span class="tag">&lt;/head&gt;</span></span>
+                <span class="code-line">  <span class="tag">&lt;body&gt;</span></span>
+                <span class="code-line">    <span class="tag">&lt;h1&gt;</span>¡Bienvenidos!<span class="tag">&lt;/h1&gt;</span></span>
+                <span class="code-line">  <span class="tag">&lt;/body&gt;</span></span>
+                <span class="code-line"><span class="tag">&lt;/html&gt;</span></span>
+            </div>
+            <h1 style="margin-top: 60px;">PROGRAMACIÓN PARA WEB</h1>
+            <p class="subtitle">Sesión 1: Presentación del Curso</p>
+            <p style="font-size: 1.3em; color: var(--text-secondary); margin-top: 20px;">Facultad de Telemática</p>
+            <div style="margin-top: 50px;">
+                <span class="badge badge-blue">Ingeniería de Software</span>
+                <span class="badge badge-green">Semestre 4</span>
+                <span class="badge badge-purple">Grupo E</span>
+            </div>
+            <p style="margin-top: 40px; font-size: 1.4em; color: var(--text-secondary);">
+                Profesor: <span class="accent">Ing. Ricardo Jaramillo Velasco</span><br>
+                Viernes 6 de febrero de 2026
+            </p>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: ¿QUÉ ES PROGRAMACIÓN WEB? CON VENTANA DE NAVEGADOR -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+        </div>
+        <div class="content">
+            <h2>🌐 ¿Qué vas a crear?</h2>
+            <p style="font-size: 1.6em; margin-bottom: 40px;">
+                Aplicaciones web <span class="highlight">modernas y funcionales</span> que millones de personas usan todos los días
+            </p>
+
+            <div class="browser-window">
+                <div class="browser-header">
+                    <div class="browser-dot red"></div>
+                    <div class="browser-dot yellow"></div>
+                    <div class="browser-dot green"></div>
+                    <span style="margin-left: 15px; color: var(--text-secondary); font-family: 'Fira Code', monospace;">
+                        localhost:5000/mi-proyecto
+                    </span>
+                </div>
+                <div class="browser-content">
+                    <div style="text-align: center;">
+                        <h1 style="font-size: 3em; margin-bottom: 20px;">Mi Primer Sistema Web 🚀</h1>
+                        <p style="font-size: 1.3em; color: var(--text-secondary);">
+                            Creado con HTML, CSS, Blazor y C#
+                        </p>
+                        <div style="margin-top: 40px; display: flex; gap: 20px; justify-content: center;">
+                            <div class="card" style="width: 200px;">
+                                <h4>Frontend</h4>
+                                <p>Interfaz bonita</p>
+                            </div>
+                            <div class="card" style="width: 200px;">
+                                <h4>Backend</h4>
+                                <p>Lógica potente</p>
+                            </div>
+                            <div class="card" style="width: 200px;">
+                                <h4>Base de Datos</h4>
+                                <p>Información segura</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: 30px; font-size: 1.4em; text-align: center;">
+                <span class="success">Al final del semestre, esto será TUYO</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: STACK TECNOLÓGICO CON ANIMACIÓN -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+        </div>
+        <div class="content">
+            <h2>💻 Tu Arsenal de Tecnologías</h2>
+            <p style="font-size: 1.5em; margin-bottom: 40px;">
+                Stack completo de desarrollo web profesional
+            </p>
+
+            <div class="tech-stack">
+                <div class="tech-item">
+                    <span class="tech-emoji">🎨</span>
+                    <div class="tech-name">HTML5</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Estructura</p>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-emoji">💎</span>
+                    <div class="tech-name">CSS3</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Diseño</p>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-emoji">⚡</span>
+                    <div class="tech-name">Blazor</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Framework</p>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-emoji">🔷</span>
+                    <div class="tech-name">C#</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Lógica</p>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-emoji">🗃️</span>
+                    <div class="tech-name">SQL Server</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Base de Datos</p>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-emoji">📡</span>
+                    <div class="tech-name">API REST</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Comunicación</p>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-emoji">☁️</span>
+                    <div class="tech-name">Azure</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Cloud</p>
+                </div>
+                <div class="tech-item">
+                    <span class="tech-emoji">🔀</span>
+                    <div class="tech-name">Git/GitHub</div>
+                    <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Control</p>
+                </div>
+            </div>
+
+            <div class="code-block" data-lang="CSS" style="margin-top: 50px;">
+                <span class="code-line"><span class="comment">/* Así se verá tu código CSS */</span></span>
+                <span class="code-line"><span class="keyword">.mi-proyecto</span> {</span>
+                <span class="code-line">  <span class="attr">background</span>: <span class="string">linear-gradient(135deg, #667eea, #764ba2)</span>;</span>
+                <span class="code-line">  <span class="attr">animation</span>: <span class="string">slideIn 0.5s ease-out</span>;</span>
+                <span class="code-line">  <span class="attr">box-shadow</span>: <span class="string">0 20px 60px rgba(0, 0, 0, 0.3)</span>;</span>
+                <span class="code-line">}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: PROYECTO FINAL CON DIAGRAMA -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+            <div>16</div><div>17</div><div>18</div>
+        </div>
+        <div class="content">
+            <h2>🏢 Proyecto Final: Como una Empresa Real</h2>
+            <p style="font-size: 1.5em; margin-bottom: 30px;">
+                Sistema Corporativo-Regional-Sucursales <span class="highlight">100% funcional</span>
+            </p>
+
+            <div class="org-diagram">
+                <div class="org-level">
+                    <div class="org-node corporate">
+                        <h4 style="color: var(--accent-purple); margin-bottom: 10px;">🏛️ CORPORATIVO</h4>
+                        <p>CEO + Frontend + Backend</p>
+                        <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Dashboard General</p>
+                    </div>
+                </div>
+
+                <div class="org-level">
+                    <div class="org-node regional">
+                        <h4 style="color: var(--accent-blue); margin-bottom: 10px;">🌎 REGIÓN NORTE</h4>
+                        <p>Líder + Frontend + Backend</p>
+                        <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Dashboard Regional</p>
+                    </div>
+                    <div class="org-node regional">
+                        <h4 style="color: var(--accent-blue); margin-bottom: 10px;">🌏 REGIÓN SUR</h4>
+                        <p>Líder + Frontend + Backend</p>
+                        <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Dashboard Regional</p>
+                    </div>
+                </div>
+
+                <div class="org-level">
+                    <div class="org-node branch">
+                        <h4 style="color: var(--accent-green); margin-bottom: 10px;">🏪 11 SUCURSALES</h4>
+                        <p>1 persona por sucursal</p>
+                        <p style="font-size: 0.9em; color: var(--text-secondary); margin-top: 10px;">Registro de Ventas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card final" style="margin-top: 40px; border: 2px solid var(--accent-orange);">
+                <p style="text-align: center; font-size: 1.4em; margin: 0;">
+                    <span class="warning">Flujo completo:</span> Sucursal registra venta → Regional consolida → Corporativo visualiza todo
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: CÓDIGO REAL HTML + CSS -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div><div>15</div>
+            <div>16</div><div>17</div><div>18</div><div>19</div><div>20</div>
+        </div>
+        <div class="content">
+            <h2>💡 Esto es lo que programarás</h2>
+            
+            <div class="grid-2">
+                <div>
+                    <h3>HTML5 - Estructura</h3>
+                    <div class="code-block" data-lang="HTML">
+                        <span class="code-line"><span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"dashboard"</span><span class="tag">&gt;</span></span>
+                        <span class="code-line">  <span class="tag">&lt;h1&gt;</span>Dashboard de Ventas<span class="tag">&lt;/h1&gt;</span></span>
+                        <span class="code-line">  <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"stats"</span><span class="tag">&gt;</span></span>
+                        <span class="code-line">    <span class="tag">&lt;div</span> <span class="attr">class</span>=<span class="string">"card"</span><span class="tag">&gt;</span></span>
+                        <span class="code-line">      <span class="tag">&lt;h3&gt;</span>$125,000<span class="tag">&lt;/h3&gt;</span></span>
+                        <span class="code-line">      <span class="tag">&lt;p&gt;</span>Ventas Totales<span class="tag">&lt;/p&gt;</span></span>
+                        <span class="code-line">    <span class="tag">&lt;/div&gt;</span></span>
+                        <span class="code-line">  <span class="tag">&lt;/div&gt;</span></span>
+                        <span class="code-line"><span class="tag">&lt;/div&gt;</span></span>
+                    </div>
+                </div>
+
+                <div>
+                    <h3>CSS3 - Diseño</h3>
+                    <div class="code-block" data-lang="CSS">
+                        <span class="code-line"><span class="keyword">.dashboard</span> {</span>
+                        <span class="code-line">  <span class="attr">display</span>: grid;</span>
+                        <span class="code-line">  <span class="attr">grid-template-columns</span>: <span class="string">repeat(3, 1fr)</span>;</span>
+                        <span class="code-line">  <span class="attr">gap</span>: 2rem;</span>
+                        <span class="code-line">}</span>
+                        <span class="code-line"></span>
+                        <span class="code-line"><span class="keyword">.card</span> {</span>
+                        <span class="code-line">  <span class="attr">background</span>: <span class="string">#1c2128</span>;</span>
+                        <span class="code-line">  <span class="attr">padding</span>: 2rem;</span>
+                        <span class="code-line">  <span class="attr">border-radius</span>: 12px;</span>
+                        <span class="code-line">  <span class="attr">transition</span>: <span class="string">transform 0.3s</span>;</span>
+                        <span class="code-line">}</span>
+                    </div>
+                </div>
+            </div>
+
+            <p style="margin-top: 40px; margin-bottom: 80px; font-size: 1.4em; text-align: center;">
+                <span class="accent">→</span> Estructura limpia con HTML5
+                <span class="accent">+</span> Diseño profesional con CSS3
+                <span class="accent">=</span> <span class="success">Aplicación impresionante 🔥</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: EVALUACIÓN -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+        </div>
+        <div class="content">
+            <h2>📊 Sistema de Evaluación</h2>
+            <h3>Evaluaciones Parciales (3)</h3>
+            <div class="grid-3">
+                <div class="eval-box">
+                    <div class="eval-percent">10%</div>
+                    <div class="eval-label">Participación</div>
+                    <p style="margin-top: 15px; color: var(--text-secondary);">Ejercicios en clase</p>
+                </div>
+                <div class="eval-box">
+                    <div class="eval-percent">50%</div>
+                    <div class="eval-label">Entregables</div>
+                    <p style="margin-top: 15px; color: var(--text-secondary);">Google Classroom</p>
+                </div>
+                <div class="eval-box">
+                    <div class="eval-percent">40%</div>
+                    <div class="eval-label">Examen</div>
+                    <p style="margin-top: 15px; color: var(--text-secondary);">Teórico-práctico</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 60px;">Evaluación Ordinaria (12 junio 2026)</h3>
+            <div class="grid-2">
+                <div class="card" style="border: 3px solid var(--accent-blue);">
+                    <h4 style="font-size: 3em; text-align: center; margin-bottom: 20px;">50%</h4>
+                    <p style="font-size: 1.5em; text-align: center;"><strong>Examen del Proyecto</strong></p>
+                    <p style="text-align: center; color: var(--text-secondary);">Explicar código Back-end y Front-End</p>
+                </div>
+                <div class="card" style="border: 3px solid var(--accent-orange);">
+                    <h4 style="font-size: 3em; text-align: center; margin-bottom: 20px;">50%</h4>
+                    <p style="font-size: 1.5em; text-align: center;"><strong>Proyecto Práctico</strong></p>
+                    <p style="text-align: center; color: var(--text-secondary);">Sistema funcional completo</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 60px;">Extraordinario (26 junio) y Regularización (31 julio)</h3>
+            <div class="card" style="border: 2px solid var(--accent-purple); padding: 30px; margin-top: 30px;">
+                <div class="grid-2" style="gap: 40px;">
+                    <div>
+                        <p style="font-size: 1.8em; margin-bottom: 15px;"><strong>50%</strong> Examen</p>
+                        <p style="color: var(--text-secondary);">Evalúa conocimientos de desarrollo. Debes demostrar y explicar con claridad las partes del código desarrollado (Back-end y Front-End).</p>
+                    </div>
+                    <div>
+                        <p style="font-size: 1.8em; margin-bottom: 15px;"><strong>50%</strong> Proyecto</p>
+                        <p style="color: var(--text-secondary);">Creación de un sistema de información Web para la solución de un problema específico.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: IA GENERATIVA -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div><div>14</div>
+        </div>
+        <div class="content">
+            <h2>🤖 Uso de IA Generativa</h2>
+            <p style="font-size: 1.5em; margin-bottom: 40px;">
+                La IA es tu <span class="accent">asistente</span>, NO tu sustituto
+            </p>
+
+            <div class="ia-grid">
+                <div class="ia-box allowed">
+                    <h3>✓ PERMITIDO</h3>
+                    <ul>
+                        <li>Generar ideas para proyectos</li>
+                        <li>Explicaciones de conceptos</li>
+                        <li>Crear borradores iniciales</li>
+                        <li>Buscar recursos</li>
+                        <li>Traducir documentación técnica</li>
+                        <li>Debuggear con comprensión</li>
+                    </ul>
+                    <div class="card" style="margin-top: 30px; border-color: var(--accent-green);">
+                        <p style="margin: 0;"><strong>OBLIGATORIO:</strong> Declarar uso en DIA</p>
+                    </div>
+                </div>
+
+                <div class="ia-box forbidden">
+                    <h3>✕ PROHIBIDO</h3>
+                    <ul>
+                        <li>Copiar código completo</li>
+                        <li>Hacer tareas completas</li>
+                        <li>Sustituir tu aprendizaje</li>
+                        <li>No declarar su uso (plagio)</li>
+                        <li>Usar en exámenes</li>
+                        <li>Entregar sin entender</li>
+                    </ul>
+                    <div class="card" style="margin-top: 30px; border-color: #f85149;">
+                        <p style="margin: 0; color: #f85149;"><strong>CONSECUENCIA:</strong> Violación de integridad</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block" data-lang="TXT" style="margin-top: 40px;">
+                <span class="code-line"><span class="comment">// Declaratoria de Uso de IAG (DIA) - Ejemplo:</span></span>
+                <span class="code-line">"Usé ChatGPT para entender cómo funcionan las APIs REST.</span>
+                <span class="code-line"> Luego programé mi propia implementación con ese conocimiento."</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: CALENDARIO -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+        </div>
+        <div class="content">
+            <h2>📅 Fechas Clave del Semestre</h2>
+            <table>
+                <tr>
+                    <th>Evento</th>
+                    <th>Fecha</th>
+                    <th>Unidad</th>
+                </tr>
+                <tr>
+                    <td>1ª Evaluación Parcial</td>
+                    <td><span class="accent">Viernes 6 marzo</span></td>
+                    <td>Unidad 1</td>
+                </tr>
+                <tr>
+                    <td>🏖️ Semana Santa</td>
+                    <td><span class="warning">30 marzo - 10 abril</span></td>
+                    <td>---</td>
+                </tr>
+                <tr>
+                    <td>2ª Evaluación Parcial</td>
+                    <td><span class="accent">Viernes 24 abril</span></td>
+                    <td>Unidad 2</td>
+                </tr>
+                <tr>
+                    <td>3ª Evaluación Parcial</td>
+                    <td><span class="accent">Viernes 29 mayo</span></td>
+                    <td>Unidad 3</td>
+                </tr>
+                <tr style="background: var(--bg-card);">
+                    <td><strong>Evaluación Ordinaria</strong></td>
+                    <td><span class="success"><strong>Viernes 12 junio</strong></span></td>
+                    <td><strong>Final</strong></td>
+                </tr>
+                <tr>
+                    <td>Evaluación Extraordinaria</td>
+                    <td><span class="accent">Jueves 26 junio</span></td>
+                    <td>Final</td>
+                </tr>
+                <tr>
+                    <td>Evaluación Regularización</td>
+                    <td><span class="accent">Viernes 31 julio</span></td>
+                    <td>Final</td>
+                </tr>
+            </table>
+
+            <div class="card" style="margin-top: 40px; border: 2px solid var(--accent-orange);">
+                <p style="text-align: center; font-size: 1.4em; margin: 0;">
+                    <span class="warning">⚠️ IMPORTANTE:</span> 80% asistencia obligatoria para derecho a parciales
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: LAS 3 UNIDADES CON TIMELINE -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div><div>12</div><div>13</div>
+        </div>
+        <div class="content">
+            <h2>📚 Las 3 Unidades del Semestre</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <h4 style="color: var(--accent-blue); font-size: 1.6em;">Introducción a la Web</h4>
+                        <p style="margin: 10px 0;">Internet • Web • Cliente-Servidor • HTML5 • CSS • Git/GitHub</p>
+                        <div style="margin-top: 15px;">
+                            <span class="badge badge-blue">6 feb - 6 mar</span>
+                            <span class="badge badge-orange">Evaluación: 6 marzo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <h4 style="color: var(--accent-blue); font-size: 1.6em;">Infraestructura de Desarrollo</h4>
+                        <p style="margin: 10px 0;">Visual Studio • Blazor • CSS Avanzado • JSON • API REST • Azure</p>
+                        <div style="margin-top: 15px;">
+                            <span class="badge badge-blue">9 mar - 24 abr</span>
+                            <span class="badge badge-orange">Evaluación: 24 abril</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <h4 style="color: var(--accent-blue); font-size: 1.6em;">Acceso a Datos + Proyecto Final</h4>
+                        <p style="margin: 10px 0;">EntityFramework • SQL • Servicios Web • JSON • Deploy Azure • Proyecto Corporativo</p>
+                        <div style="margin-top: 15px;">
+                            <span class="badge badge-blue">11 abr - 24 may</span>
+                            <span class="badge badge-orange">Evaluación: 29 mayo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: EXPECTATIVAS -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+        </div>
+        <div class="content">
+            <h2>🤝 Expectativas Mutuas</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Lo que espero de ustedes:</h3>
+                    <ul style="margin: 20px 0; margin-left: 20px;">
+                        <li>Puntualidad y <span class="highlight">80% asistencia</span></li>
+                        <li>Participación activa</li>
+                        <li>Entregas puntuales</li>
+                        <li>Honestidad académica</li>
+                        <li>Trabajo en equipo</li>
+                        <li><span class="accent">Preguntar cuando no entiendan</span></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Lo que pueden esperar de mí:</h3>
+                    <ul style="margin: 20px 0; margin-left: 20px;">
+                        <li>Clases preparadas</li>
+                        <li>Retroalimentación oportuna</li>
+                        <li>Disponibilidad para dudas</li>
+                        <li>Evaluación justa</li>
+                        <li>Respeto profesional</li>
+                        <li><span class="accent">Apoyo para que todos logren</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 40px; border: 2px solid var(--accent-blue); text-align: center;">
+                <p style="font-size: 1.6em; margin: 0;">
+                    💬 <strong>¿Alguien quiere agregar alguna expectativa?</strong>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: EVALUACIÓN DIAGNÓSTICA -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div>
+            <div>10</div><div>11</div><div>12</div>
+        </div>
+        <div class="content">
+            <h2>📊 Evaluación Diagnóstica + Google Classroom</h2>
+            <p style="font-size: 1.5em; margin: 30px 0; text-align: center;">
+                No cuenta para calificación. Solo para <span class="accent">conocer el nivel del grupo</span>.
+            </p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 50px 0; max-width: 1000px; margin-left: auto; margin-right: auto;">
+                <!-- QR Mentimeter -->
+                <div style="text-align: center;">
+                    <div class="qr-placeholder" style="width: 350px; height: 350px; margin: 0 auto;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3em; margin-bottom: 20px;">📊</div>
+                            QR CODE<br>Mentimeter
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 25px;">
+                        <h3 style="color: var(--accent-blue); margin-bottom: 15px;">Evaluación Diagnóstica</h3>
+                        <p style="font-size: 1.3em; margin: 10px 0;">10 preguntas | 20 minutos</p>
+                        <p style="font-size: 1.1em; color: var(--text-secondary);">Escanea con tu celular</p>
+                    </div>
+                </div>
+
+                <!-- QR Google Classroom -->
+                <div style="text-align: center;">
+                    <div class="qr-placeholder" style="width: 350px; height: 350px; margin: 0 auto;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3em; margin-bottom: 20px;">💻</div>
+                            QR CODE<br>Google Classroom
+                        </div>
+                    </div>
+                    <div class="card" style="margin-top: 25px;">
+                        <h3 style="color: var(--accent-green); margin-bottom: 15px;">Únete a la Clase</h3>
+                        <p style="font-size: 1.8em; font-family: 'Fira Code', monospace; font-weight: 700; color: var(--accent-green); margin: 10px 0;">guw4marp</p>
+                        <p style="font-size: 1.1em; color: var(--text-secondary);">Código de clase</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 40px; max-width: 900px; margin-left: auto; margin-right: auto; border: 2px solid var(--accent-orange);">
+                <p style="margin: 0; font-size: 1.4em; text-align: center;">
+                    💡 Sean <span class="highlight">honestos</span> en la evaluación para adaptar las clases a sus necesidades
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: TAREAS -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+            <div>11</div>
+        </div>
+        <div class="content">
+            <h2>✅ Tareas para el Lunes 9 de Febrero</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-marker">1</div>
+                    <div class="timeline-content">
+                        <h4>📝 Actividad en Google Classroom</h4>
+                        <p>"Mi primera publicación - Presentación personal"</p>
+                        <p style="color: var(--text-secondary);">Documento PDF o Word (máx. 1 página)</p>
+                        <span class="badge badge-orange" style="margin-top: 10px;">Límite: Lunes 11:59 PM</span>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">2</div>
+                    <div class="timeline-content">
+                        <h4>🔀 Crear cuenta en GitHub</h4>
+                        <p>Nombre de usuario profesional</p>
+                        <p style="color: var(--text-secondary);">Tu identidad en el mundo del desarrollo</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">3</div>
+                    <div class="timeline-content">
+                        <h4>📖 Leer guía de lineamientos de IA (UdeC)</h4>
+                        <p>Documento en Classroom</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-marker">4</div>
+                    <div class="timeline-content">
+                        <h4>🗺️ Revisar Roadmap Visual</h4>
+                        <p>Familiarizarse con fechas y contenidos</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 13: CIERRE CON CÓDIGO -->
+    <div class="slide">
+        <div class="line-numbers">
+            <div>1</div><div>2</div><div>3</div><div>4</div><div>5</div>
+            <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div>
+        </div>
+        <div class="content center">
+            <h1 style="font-size: 5em; margin-bottom: 30px;">🚀</h1>
+            <h2 style="margin-bottom: 50px; font-size: 3.5em;">¡Prepárate para crear cosas increíbles!</h2>
+            
+            <div class="card" style="max-width: 900px; margin: 0 auto 50px auto; padding: 40px;">
+                <p style="text-align: center; font-size: 1.6em; line-height: 2; margin: 0;">
+                    📧 <strong>rjaramillo0@ucol.mx</strong><br>
+                    💼 <strong>www.linkedin.com/in/rjaramillov</strong><br>
+                    💻 <strong>Google Classroom</strong>
+                </p>
+            </div>
+
+            <div class="card" style="max-width: 900px; margin: 0 auto; padding: 30px; border: 2px solid var(--accent-blue);">
+                <p style="text-align: center; font-size: 1.8em; margin: 0; color: var(--accent-blue);">
+                    <strong>El lunes iniciamos con Internet y la Web</strong>
+                </p>
+            </div>
+
+            <p style="font-size: 3em; margin-top: 60px; font-weight: 900; background: linear-gradient(135deg, var(--accent-blue), var(--accent-green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                ¡Nos vemos el lunes! 👋
+            </p>
+        </div>
+    </div>
+
+    <!-- CONTROLES -->
+    <div class="controls">
+        <button onclick="previousSlide()">◀ Anterior</button>
+        <button onclick="nextSlide()">Siguiente ▶</button>
+    </div>
+    <div class="slide-number">
+        <span id="current-slide">1</span> / <span id="total-slides">13</span>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        showSlide(0);
+    </script>
+
+</body>
+</html>
