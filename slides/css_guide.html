@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS - Guía Visual Interactiva</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50px;
+            padding: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 15px 25px;
+            margin: 0 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            color: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-button.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .content-section.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .code-block::before {
+            content: 'CSS';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .demo-box {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .demo-box:hover {
+            border-color: #667eea;
+        }
+
+        .selector-demo {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .interactive-demo {
+            background: #f0f4f8;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .property-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .property-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .property-card strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .syntax-breakdown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+
+        .syntax-part {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .syntax-part::after {
+            content: attr(data-label);
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: normal;
+        }
+
+        .types-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .type-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .type-card:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .type-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            margin: 0 auto 15px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8edea 0%, #fed6e3 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .pros, .cons {
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .pros {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+
+        .cons {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+
+        .responsive {
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab-button {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .syntax-breakdown {
+                flex-direction: column;
+            }
+            
+            .selector-demo {
+                grid-template-columns: 1fr;
+            }
+            
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>CSS - Cascading Style Sheets</h1>
+            <p>Guía visual interactiva para dominar los estilos web</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="tab-button active" onclick="showSection('que-es')">¿Qué es CSS?</button>
+            <button class="tab-button" onclick="showSection('sintaxis')">Sintaxis</button>
+            <button class="tab-button" onclick="showSection('tipos')">Tipos de CSS</button>
+            <button class="tab-button" onclick="showSection('selectores')">Selectores</button>
+            <button class="tab-button" onclick="showSection('propiedades')">Propiedades</button>
+        </div>
+
+        <!-- Sección: ¿Qué es CSS? -->
+        <div id="que-es" class="content-section active">
+            <h2 class="section-title">¿Qué es CSS?</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>📖 Definición</h3>
+                    <p><strong>CSS (Cascading Style Sheets)</strong> es un lenguaje de diseño que se utiliza para describir la presentación de un documento HTML. Controla el layout, colores, fuentes y la apariencia visual de las páginas web.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>🎯 Propósito</h3>
+                    <p>Separar el <span class="highlight">contenido</span> (HTML) del <span class="highlight">diseño</span> (CSS), permitiendo mayor flexibilidad, mantenimiento más fácil y mejor rendimiento.</p>
+                </div>
+                
+                <div class="card">
+                    <h3>⚡ Características</h3>
+                    <ul>
+                        <li><strong>Cascading:</strong> Las reglas se aplican en cascada</li>
+                        <li><strong>Selectivo:</strong> Permite seleccionar elementos específicos</li>
+                        <li><strong>Reutilizable:</strong> Un archivo CSS puede usarse en múltiples páginas</li>
+                        <li><strong>Responsive:</strong> Adaptable a diferentes dispositivos</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="demo-box">
+                <h3>Ejemplo Visual</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left;">
+                    <div>
+                        <h4>Sin CSS:</h4>
+                        <div style="border: 1px solid #ccc; padding: 10px; font-family: Times;">
+                            <h1>Mi Página Web</h1>
+                            <p>Este es un párrafo normal sin estilos.</p>
+                            <button>Botón simple</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Con CSS:</h4>
+                        <div style="border: 1px solid #667eea; padding: 20px; background: linear-gradient(135deg, #f8f9fa, #e9ecef); border-radius: 10px;">
+                            <h1 style="color: #667eea; font-family: 'Segoe UI';">Mi Página Web</h1>
+                            <p style="color: #666; font-size: 1.1rem;">Este párrafo tiene estilos aplicados.</p>
+                            <button style="background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer;">Botón estilizado</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Sintaxis -->
+        <div id="sintaxis" class="content-section">
+            <h2 class="section-title">Sintaxis de CSS</h2>
+            
+            <div class="syntax-breakdown">
+                <div class="syntax-part" data-label="Selector">h1</div>
+                <div class="syntax-part" data-label="Llave de apertura">{</div>
+                <div class="syntax-part" data-label="Propiedad">color</div>
+                <div class="syntax-part" data-label="Dos puntos">:</div>
+                <div class="syntax-part" data-label="Valor">blue</div>
+                <div class="syntax-part" data-label="Punto y coma">;</div>
+                <div class="syntax-part" data-label="Llave de cierre">}</div>
+            </div>
+
+            <div class="code-block">
+selector {
+    propiedad: valor;
+    propiedad: valor;
+}
+
+/* Ejemplo práctico */
+h1 {
+    color: #667eea;
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
+}
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>🎯 Reglas Importantes</h3>
+                    <ul>
+                        <li><strong>Selector:</strong> Indica qué elemento(s) aplicar el estilo</li>
+                        <li><strong>Propiedad:</strong> Qué aspecto modificar</li>
+                        <li><strong>Valor:</strong> Cómo modificarlo</li>
+                        <li><strong>Punto y coma (;):</strong> Separa declaraciones</li>
+                        <li><strong>Llaves { }:</strong> Agrupan declaraciones</li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>💡 Comentarios</h3>
+                    <div class="code-block">
+/* Comentario de una línea */
+
+/* 
+   Comentario 
+   de múltiples 
+   líneas 
+*/
+                    </div>
+                    <p>Los comentarios no afectan el código pero ayudan a documentarlo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Tipos de CSS -->
+        <div id="tipos" class="content-section">
+            <h2 class="section-title">Tipos de CSS</h2>
+            
+            <div class="types-grid">
+                <div class="type-card">
+                    <div class="type-icon">1</div>
+                    <h3>CSS Inline (En línea)</h3>
+                    <div class="code-block">
+&lt;p style="color: red; font-size: 16px;"&gt;
+    Texto con estilo inline
+&lt;/p&gt;
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>✅ Ventajas:</strong>
+                            <ul>
+                                <li>Alta especificidad</li>
+                                <li>Aplicación inmediata</li>
+                                <li>No requiere archivos externos</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <strong>❌ Desventajas:</strong>
+                            <ul>
+                                <li>Difícil de mantener</li>
+                                <li>No reutilizable</li>
+                                <li>Mezcla contenido con diseño</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="type-card">
+                    <div class="type-icon">2</div>
+                    <h3>CSS Interno (Embedded)</h3>
+                    <div class="code-block">
+&lt;head&gt;
+    &lt;style&gt;
+        p {
+            color: blue;
+            font-size: 18px;
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>✅ Ventajas:</strong>
+                            <ul>
+                                <li>Más organizado que inline</li>
+                                <li>Reutilizable en la página</li>
+                                <li>Una sola petición HTTP</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <strong>❌ Desventajas:</strong>
+                            <ul>
+                                <li>Solo funciona en una página</li>
+                                <li>Aumenta el tamaño del HTML</li>
+                                <li>Dificulta el mantenimiento</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="type-card">
+                    <div class="type-icon">3</div>
+                    <h3>CSS Externo (External)</h3>
+                    <div class="code-block">
+&lt;head&gt;
+    &lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;/head&gt;
+
+/* En el archivo styles.css */
+p {
+    color: green;
+    font-size: 20px;
+}
+                    </div>
+                    <div class="pros-cons">
+                        <div class="pros">
+                            <strong>✅ Ventajas:</strong>
+                            <ul>
+                                <li>Reutilizable en múltiples páginas</li>
+                                <li>Fácil mantenimiento</li>
+                                <li>Separación clara de contenido/diseño</li>
+                                <li>Cacheable por el navegador</li>
+                            </ul>
+                        </div>
+                        <div class="cons">
+                            <strong>❌ Desventajas:</strong>
+                            <ul>
+                                <li>Petición HTTP adicional</li>
+                                <li>Dependencia de archivo externo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="interactive-demo">
+                <h3>🏆 Recomendación</h3>
+                <p><strong>CSS Externo</strong> es la mejor práctica para la mayoría de proyectos web debido a su flexibilidad, mantenibilidad y reutilización.</p>
+            </div>
+        </div>
+
+        <!-- Sección: Selectores -->
+        <div id="selectores" class="content-section">
+            <h2 class="section-title">Selectores CSS</h2>
+            
+            <div class="grid">
+                <div class="card">
+                    <h3>🏷️ Selector de Elemento</h3>
+                    <div class="selector-demo">
+                        <div class="code-block">
+p {
+    color: blue;
+}
+                        </div>
+                        <div class="demo-box">
+                            <p style="color: blue;">Párrafo seleccionado por elemento</p>
+                        </div>
+                    </div>
+                    <p>Selecciona todos los elementos del tipo especificado.</p>
+                </div>
+
+                <div class="card">
+                    <h3>🆔 Selector de ID</h3>
+                    <div class="selector-demo">
+                        <div class="code-block">
+#titulo {
+    color: red;
+    font-weight: bold;
+}
+                        </div>
+                        <div class="demo-box">
+                            <h3 style="color: red; font-weight: bold;">Título con ID</h3>
+                        </div>
+                    </div>
+                    <p>Selecciona el elemento con el ID específico (único).</p>
+                </div>
+
+                <div class="card">
+                    <h3>📂 Selector de Clase</h3>
+                    <div class="selector-demo">
+                        <div class="code-block">
+.destacado {
+    background: yellow;
+    padding: 10px;
+}
+                        </div>
+                        <div class="demo-box">
+                            <p style="background: yellow; padding: 10px;">Texto con clase destacado</p>
+                        </div>
+                    </div>
+                    <p>Selecciona elementos con la clase específica (reutilizable).</p>
+                </div>
+
+                <div class="card">
+                    <h3>⭐ Selector Universal</h3>
+                    <div class="code-block">
+* {
+    margin: 0;
+    padding: 0;
+}
+                    </div>
+                    <p>Selecciona todos los elementos de la página.</p>
+                </div>
+
+                <div class="card">
+                    <h3>👥 Selector de Grupo</h3>
+                    <div class="code-block">
+h1, h2, h3 {
+    color: #333;
+    font-family: Arial;
+}
+                    </div>
+                    <p>Aplica el mismo estilo a múltiples selectores.</p>
+                </div>
+
+                <div class="card">
+                    <h3>🔗 Selector Descendiente</h3>
+                    <div class="code-block">
+.container p {
+    font-style: italic;
+}
+                    </div>
+                    <p>Selecciona elementos que son descendientes de otro elemento.</p>
+                </div>
+            </div>
+
+            <div class="interactive-demo">
+                <h3>📊 Especificidad de Selectores (de mayor a menor)</h3>
+                <div style="display: flex; justify-content: space-around; text-align: center; margin-top: 15px;">
+                    <div style="background: #dc3545; color: white; padding: 15px; border-radius: 8px;">
+                        <strong>Inline</strong><br>1000
+                    </div>
+                    <div style="background: #fd7e14; color: white; padding: 15px; border-radius: 8px;">
+                        <strong>ID</strong><br>100
+                    </div>
+                    <div style="background: #ffc107; color: black; padding: 15px; border-radius: 8px;">
+                        <strong>Clase</strong><br>10
+                    </div>
+                    <div style="background: #28a745; color: white; padding: 15px; border-radius: 8px;">
+                        <strong>Elemento</strong><br>1
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Propiedades -->
+        <div id="propiedades" class="content-section">
+            <h2 class="section-title">Propiedades CSS Principales</h2>
+            
+            <div class="property-grid">
+                <div class="property-card">
+                    <strong>🎨 Color y Fondo</strong>
+                    <div class="code-block">
+color: #333;
+background-color: #f8f9fa;
+background-image: url('imagen.jpg');
+background-size: cover;
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <strong>📝 Texto y Fuentes</strong>
+                    <div class="code-block">
+font-family: Arial, sans-serif;
+font-size: 16px;
+font-weight: bold;
+text-align: center;
+text-decoration: underline;
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <strong>📏 Dimensiones</strong>
+                    <div class="code-block">
+width: 300px;
+height: 200px;
+max-width: 100%;
+min-height: 50px;
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <strong>📦 Box Model</strong>
+                    <div class="code-block">
+margin: 20px;
+padding: 15px;
+border: 2px solid #333;
+border-radius: 10px;
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <strong>📐 Posicionamiento</strong>
+                    <div class="code-block">
+position: absolute;
+top: 10px;
+left: 20px;
+z-index: 1000;
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <strong>🔄 Display y Flex</strong>
+                    <div class="code-block">
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <strong>🌟 Efectos Visuales</strong>
+                    <div class="code-block">
+box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+transform: rotate(45deg);
+transition: all 0.3s ease;
+opacity: 0.8;
+                    </div>
+                </div>
+
+                <div class="property-card">
+                    <strong>📱 Responsive Design</strong>
+                    <div class="code-block">
+@media (max-width: 768px) {
+    font-size: 14px;
+    padding: 10px;
+}
+                    </div>
+                </div>
+            </div>
+
+            <div class="demo-box" style="margin-top: 30px;">
+                <h3>🎭 Ejemplo Interactivo</h3>
+                <div style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 20px; border-radius: 15px; margin: 15px 0; transform: scale(1); transition: transform 0.3s ease; cursor: pointer;" 
+                     onmouseover="this.style.transform='scale(1.05)'" 
+                     onmouseout="this.style.transform='scale(1)'">
+                    ¡Pasa el ratón sobre mí! 🚀
+                </div>
+                <p><em>Este elemento combina múltiples propiedades CSS para crear un efecto atractivo</em></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Actualizar botones de navegación
+            const buttons = document.querySelectorAll('.tab-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // Activar el botón clickeado
+            event.target.classList.add('active');
+        }
+
+        // Agregar efectos de hover a las cards
+        document.querySelectorAll('.card, .type-card, .property-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Efecto de escritura en el título
+        const title = document.querySelector('.header h1');
+        title.style.opacity = '0';
+        title.style.transform = 'translateY(-20px)';
+        
+        setTimeout(() => {
+            title.style.transition = 'all 1s ease';
+            title.style.opacity = '1';
+            title.style.transform = 'translateY(0)';
+        }, 500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS CV Transformer - Aprende CSS Paso a Paso</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --bg-code: #1c2128;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-orange: #d29922;
+            --accent-purple: #bc8cff;
+            --accent-red: #f85149;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* HEADER */
+        .main-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: var(--bg-card);
+            border-radius: 15px;
+            border: 1px solid var(--border-color);
+        }
+
+        .main-header h1 {
+            font-size: 3em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .main-header p {
+            font-size: 1.3em;
+            color: var(--text-secondary);
+        }
+
+        /* TABS NAVIGATION */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-button {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(88, 166, 255, 0.3);
+        }
+
+        .tab-button.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--bg-dark);
+        }
+
+        /* TAB CONTENT */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            color: var(--accent-blue);
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        h3 {
+            color: var(--accent-green);
+            font-size: 1.5em;
+            margin: 20px 0 15px;
+        }
+
+        /* TAB 1: BEFORE/AFTER SLIDER - VERSIÓN DEFINITIVA */
+        .comparison-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            height: 700px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            background: white;
+        }
+
+        /* CV Con CSS - siempre visible al fondo */
+        .cv-with-css {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* CV Sin CSS - encima, cortado por width */
+        .cv-without-css {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            background: white;
+            z-index: 10;
+        }
+
+        .cv-without-css-inner {
+            width: 1200px;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-blue);
+            cursor: ew-resize;
+            z-index: 20;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.8);
+        }
+
+        .slider-button {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5em;
+            box-shadow: 0 5px 20px rgba(88, 166, 255, 0.5);
+            cursor: ew-resize;
+            user-select: none;
+        }
+
+        .slider-button:hover {
+            background: var(--accent-green);
+            box-shadow: 0 5px 25px rgba(63, 185, 80, 0.6);
+        }
+
+        .comparison-label {
+            position: absolute;
+            top: 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1.1em;
+            z-index: 15;
+        }
+
+        .comparison-label.before {
+            left: 20px;
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .comparison-label.after {
+            right: 20px;
+            background: var(--accent-green);
+            color: white;
+        }
+
+        /* Estilos para el CV SIN CSS - BÁSICO Y FEO */
+        .cv-without-css-inner .cv-content {
+            padding: 20px;
+            font-family: 'Times New Roman', serif !important;
+            color: black !important;
+            background: white !important;
+        }
+
+        .cv-without-css-inner .cv-content * {
+            font-family: 'Times New Roman', serif !important;
+            color: black !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            line-height: 1.2 !important;
+        }
+
+        .cv-without-css-inner .cv-content h1 {
+            font-size: 2em !important;
+            margin-bottom: 10px !important;
+            font-weight: bold !important;
+        }
+
+        .cv-without-css-inner .cv-content h2 {
+            font-size: 1.5em !important;
+            margin-top: 15px !important;
+            margin-bottom: 10px !important;
+            font-weight: bold !important;
+        }
+
+        .cv-without-css-inner .cv-content p {
+            margin-bottom: 10px !important;
+        }
+
+        .cv-without-css-inner .cv-content ul {
+            margin-left: 40px !important;
+            margin-bottom: 10px !important;
+            list-style: disc !important;
+        }
+
+        .cv-without-css-inner .cv-content li {
+            margin-bottom: 5px !important;
+        }
+
+        .cv-without-css-inner .cv-content input,
+        .cv-without-css-inner .cv-content textarea {
+            border: 1px solid black !important;
+            padding: 5px !important;
+            width: 200px !important;
+            margin-bottom: 5px !important;
+        }
+
+        .cv-without-css-inner .cv-content button {
+            border: 1px solid black !important;
+            padding: 5px 10px !important;
+            background: #ddd !important;
+        }
+
+        .cv-without-css-inner .cv-content section {
+            margin-bottom: 20px !important;
+        }
+
+        .cv-without-css-inner .cv-content header {
+            margin-bottom: 20px !important;
+        }
+
+        .cv-without-css-inner .cv-content footer {
+            margin-top: 20px !important;
+        }
+
+        .cv-without-css-inner .cv-content a {
+            color: blue !important;
+            text-decoration: underline !important;
+        }
+
+        /* Estilos para el CV CON CSS - PROFESIONAL Y BONITO */
+        .cv-with-css .cv-content {
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+        }
+
+        .cv-with-css .cv-content header {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .cv-with-css .cv-content h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 5px;
+            font-weight: 900;
+        }
+
+        .cv-with-css .cv-content header p {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+        }
+
+        .cv-with-css .cv-content main {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .cv-with-css .cv-content section {
+            margin-bottom: 30px;
+        }
+
+        .cv-with-css .cv-content h2 {
+            color: #3498db;
+            font-size: 1.8em;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .cv-with-css .cv-content p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        .cv-with-css .cv-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .cv-with-css .cv-content li {
+            margin-bottom: 15px;
+            padding-left: 20px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            border-left: 4px solid #3498db;
+            background: #f8f9fa;
+        }
+
+        .cv-with-css .cv-content li strong {
+            color: #2c3e50;
+            font-weight: 700;
+        }
+
+        .cv-with-css .cv-content input,
+        .cv-with-css .cv-content textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            transition: border-color 0.3s ease;
+        }
+
+        .cv-with-css .cv-content input:focus,
+        .cv-with-css .cv-content textarea:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        .cv-with-css .cv-content button {
+            background: #3498db;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cv-with-css .cv-content button:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .cv-with-css .cv-content footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+        }
+
+        .cv-with-css .cv-content footer p {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .cv-with-css .cv-content footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .cv-with-css .cv-content footer a:hover {
+            color: #5dade2;
+            text-decoration: underline;
+        }
+
+        .cv-with-css .cv-content label {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* TABS NAVIGATION */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .tab-button {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            padding: 15px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(88, 166, 255, 0.3);
+        }
+
+        .tab-button.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: var(--bg-dark);
+        }
+
+        /* TAB CONTENT */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* TAB 2: STEP BY STEP */
+        .step-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .step-info {
+            background: var(--bg-code);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid var(--accent-green);
+        }
+
+        .step-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-y: auto;
+            max-height: 600px;
+        }
+
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: var(--bg-code);
+            border-radius: 10px;
+        }
+
+        .nav-button {
+            background: var(--accent-blue);
+            color: var(--bg-dark);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(63, 185, 80, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            flex: 1;
+            margin: 0 20px;
+            height: 8px;
+            background: var(--bg-card);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-green));
+            transition: width 0.3s ease;
+        }
+
+        .step-counter {
+            font-family: 'Fira Code', monospace;
+            font-size: 1.2em;
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+
+        .code-block {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background: var(--accent-blue);
+        }
+
+        .copy-button.copied {
+            background: var(--accent-purple);
+        }
+
+        /* TAB 3: BOX MODEL */
+        .box-model-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .box-visual {
+            background: var(--bg-code);
+            padding: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .box-layers {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .box-layer {
+            border: 3px solid;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .box-margin {
+            border-color: #f39c12;
+            background: rgba(243, 156, 18, 0.1);
+        }
+
+        .box-border {
+            border-color: #e74c3c;
+            background: rgba(231, 76, 60, 0.1);
+        }
+
+        .box-padding {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .box-content {
+            background: #2ecc71;
+            color: white;
+            padding: 30px;
+            text-align: center;
+            font-weight: 700;
+            border-radius: 5px;
+        }
+
+        .box-controls {
+            background: var(--bg-code);
+            padding: 25px;
+            border-radius: 10px;
+        }
+
+        .control-group {
+            margin-bottom: 25px;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: var(--bg-card);
+            outline: none;
+        }
+
+        .control-group input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+        }
+
+        .control-value {
+            display: inline-block;
+            min-width: 60px;
+            text-align: right;
+            font-family: 'Fira Code', monospace;
+            color: var(--accent-orange);
+            font-weight: 700;
+        }
+
+        /* TAB 4: REFERENCE */
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .reference-card {
+            background: var(--bg-code);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .reference-card h4 {
+            color: var(--accent-green);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .reference-card code {
+            background: var(--bg-dark);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            color: var(--accent-orange);
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .palette-card {
+            background: var(--bg-code);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .color-swatch {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .color-box {
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85em;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .use-palette-btn {
+            margin-top: 15px;
+            background: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+        }
+
+        .use-palette-btn:hover {
+            background: var(--accent-blue);
+        }
+
+        /* Estilos base para el preview del Tab 2 */
+        #cvStepPreview {
+            font-family: Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        #cvStepPreview h1 {
+            margin-bottom: 5px;
+        }
+
+        #cvStepPreview h2 {
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        #cvStepPreview ul {
+            padding-left: 20px;
+        }
+
+        #cvStepPreview li {
+            margin-bottom: 10px;
+        }
+
+        #cvStepPreview input,
+        #cvStepPreview textarea {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* TAB 5: FLEXBOX */
+        .flexbox-demo-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .flex-preview {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            min-height: 400px;
+        }
+
+        .flex-preview h4 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .cv-layout-before {
+            background: #f9f9f9;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .cv-layout-after {
+            background: #f9f9f9;
+            padding: 15px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .cv-sidebar {
+            flex: 0 0 250px;
+            background: #2c3e50;
+            padding: 20px;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .cv-main-content {
+            flex: 1;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .cv-layout-before > div,
+        .cv-main-content > div {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+
+        .cv-sidebar > div {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            border-left: 3px solid #3498db;
+        }
+
+        .flexbox-playground {
+            background: var(--bg-code);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .flex-demo-box {
+            background: white;
+            padding: 20px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 300px;
+            display: flex;
+        }
+
+        .flex-item {
+            background: var(--accent-blue);
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 80px;
+            min-height: 80px;
+        }
+
+        .flex-controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .flex-control {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .flex-control label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .flex-control select {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-code);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+        }
+
+        .flex-control input[type="range"] {
+            width: 100%;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .step-container,
+            .box-model-container {
+                grid-template-columns: 1fr;
+            }
+
+            .palette-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .flexbox-demo-container,
+            .flex-controls-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="main-header">
+            <h1>🎨 CSS CV Transformer</h1>
+            <p>Aprende CSS transformando tu CV paso a paso</p>
+        </div>
+
+        <!-- TABS NAVIGATION -->
+        <div class="tabs-nav">
+            <button class="tab-button active" onclick="showTab('motivation')">
+                🚀 Antes/Después
+            </button>
+            <button class="tab-button" onclick="showTab('learn')">
+                📚 Aprende Paso a Paso
+            </button>
+            <button class="tab-button" onclick="showTab('boxmodel')">
+                📦 Box Model
+            </button>
+            <button class="tab-button" onclick="showTab('reference')">
+                📖 Referencia
+            </button>
+            <button class="tab-button" onclick="showTab('flexbox')" style="border: 2px solid var(--accent-orange);">
+                🎯 Flexbox <span style="font-size: 0.7em; background: var(--accent-orange); padding: 2px 6px; border-radius: 4px; margin-left: 5px;">AVANZADO</span>
+            </button>
+        </div>
+
+        <!-- TAB: BEFORE/AFTER -->
+        <div id="tab-motivation" class="tab-content active">
+            <div class="card">
+                <h2>💡 El Poder del CSS</h2>
+                <p style="font-size: 1.2em; margin-bottom: 30px; color: var(--text-secondary);">
+                    Mueve el slider para ver cómo CSS transforma el mismo HTML de básico a profesional
+                </p>
+
+                <div class="comparison-wrapper">
+                    <div class="comparison-label before">SIN CSS</div>
+                    <div class="comparison-label after">CON CSS</div>
+
+                    <!-- CV CON CSS (fondo) -->
+                    <div class="cv-with-css">
+                        <div class="cv-content" id="cvWithCSS"></div>
+                    </div>
+
+                    <!-- CV SIN CSS (encima, cortado) -->
+                    <div class="cv-without-css" id="cvWithoutCSSWrapper">
+                        <div class="cv-without-css-inner">
+                            <div class="cv-content" id="cvWithoutCSS"></div>
+                        </div>
+                    </div>
+
+                    <!-- Slider -->
+                    <div class="slider-handle" id="sliderHandle">
+                        <div class="slider-button">⬌</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: APRENDE PASO A PASO -->
+        <div id="tab-learn" class="tab-content">
+            <div class="card">
+                <h2>📚 Aprende CSS Paso a Paso</h2>
+
+                <div class="step-navigation">
+                    <button class="nav-button" id="prevBtn" onclick="previousStep()">◀ Anterior</button>
+                    
+                    <div style="flex: 1; text-align: center;">
+                        <div class="step-counter" id="stepCounter">Paso 1 / 12</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <button class="nav-button" id="nextBtn" onclick="nextStep()">Siguiente ▶</button>
+                </div>
+
+                <div class="step-container">
+                    <div class="step-info">
+                        <h3 id="stepTitle">Paso 1: Background de Página</h3>
+                        <p id="stepDescription" style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.8;"></p>
+
+                        <div class="code-block" id="stepCode">
+                            <button class="copy-button" onclick="copyCode()">Copiar</button>
+                            <pre id="codeContent"></pre>
+                        </div>
+
+                        <div style="margin-top: 20px;">
+                            <button class="nav-button" onclick="applyCurrentCSS()" style="width: 100%; background: var(--accent-green);">
+                                ✨ Aplicar este CSS
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="step-preview">
+                        <div id="cvStepPreview" style="background: white; padding: 20px; border-radius: 10px;">
+                            <!-- CV con CSS progresivo -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: BOX MODEL -->
+        <div id="tab-boxmodel" class="tab-content">
+            <div class="card">
+                <h2>📦 Box Model Interactivo</h2>
+                <p style="font-size: 1.2em; margin-bottom: 30px; color: var(--text-secondary);">
+                    Juega con los sliders para entender cómo funciona el Box Model en CSS
+                </p>
+
+                <div class="box-model-container">
+                    <div class="box-visual">
+                        <div class="box-layers" id="boxLayers">
+                            <div class="box-margin" id="boxMargin">
+                                <div class="box-border" id="boxBorder">
+                                    <div class="box-padding" id="boxPadding">
+                                        <div class="box-content">
+                                            CONTENIDO
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="box-controls">
+                        <h3>Controles</h3>
+
+                        <div class="control-group">
+                            <label>
+                                🟧 Margin: <span class="control-value" id="marginValue">20px</span>
+                            </label>
+                            <input type="range" id="marginSlider" min="0" max="50" value="20" 
+                                   oninput="updateBoxModel()">
+                        </div>
+
+                        <div class="control-group">
+                            <label>
+                                🟥 Border: <span class="control-value" id="borderValue">3px</span>
+                            </label>
+                            <input type="range" id="borderSlider" min="0" max="10" value="3" 
+                                   oninput="updateBoxModel()">
+                        </div>
+
+                        <div class="control-group">
+                            <label>
+                                🟦 Padding: <span class="control-value" id="paddingValue">20px</span>
+                            </label>
+                            <input type="range" id="paddingSlider" min="0" max="50" value="20" 
+                                   oninput="updateBoxModel()">
+                        </div>
+
+                        <h3 style="margin-top: 30px;">Código CSS Generado:</h3>
+                        <div class="code-block">
+                            <button class="copy-button" onclick="copyBoxModelCSS()">Copiar</button>
+                            <pre id="boxModelCode"></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: REFERENCIA -->
+        <div id="tab-reference" class="tab-content">
+            <div class="card">
+                <h2>📖 Referencia Rápida de CSS</h2>
+
+                <h3>🎨 Propiedades CSS Esenciales</h3>
+                <div class="reference-grid">
+                    <div class="reference-card">
+                        <h4>Colores</h4>
+                        <p><code>color</code> - Color del texto</p>
+                        <p><code>background-color</code> - Color de fondo</p>
+                    </div>
+
+                    <div class="reference-card">
+                        <h4>Tipografía</h4>
+                        <p><code>font-family</code> - Fuente</p>
+                        <p><code>font-size</code> - Tamaño</p>
+                        <p><code>font-weight</code> - Grosor</p>
+                        <p><code>line-height</code> - Altura de línea</p>
+                    </div>
+
+                    <div class="reference-card">
+                        <h4>Espaciado</h4>
+                        <p><code>margin</code> - Espacio exterior</p>
+                        <p><code>padding</code> - Espacio interior</p>
+                    </div>
+
+                    <div class="reference-card">
+                        <h4>Bordes</h4>
+                        <p><code>border</code> - Borde completo</p>
+                        <p><code>border-radius</code> - Esquinas redondas</p>
+                    </div>
+
+                    <div class="reference-card">
+                        <h4>Alineación</h4>
+                        <p><code>text-align</code> - Alinear texto</p>
+                        <p><code>margin: 0 auto</code> - Centrar</p>
+                    </div>
+
+                    <div class="reference-card">
+                        <h4>Efectos</h4>
+                        <p><code>box-shadow</code> - Sombra</p>
+                        <p><code>:hover</code> - Al pasar mouse</p>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 40px;">🎨 Paletas de Colores Profesionales</h3>
+                <div class="palette-grid">
+                    <!-- Paleta 1 -->
+                    <div class="palette-card">
+                        <h4 style="color: var(--accent-blue);">Profesional Azul</h4>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #2c3e50;">#2c3e50</div>
+                            <div class="color-box" style="background: #3498db;">#3498db</div>
+                            <div class="color-box" style="background: #e74c3c;">#e74c3c</div>
+                            <div class="color-box" style="background: #ecf0f1; color: #333;">#ecf0f1</div>
+                        </div>
+                        <button class="use-palette-btn" onclick="usePalette('blue')">Usar Paleta</button>
+                    </div>
+
+                    <!-- Paleta 2 -->
+                    <div class="palette-card">
+                        <h4 style="color: var(--accent-green);">Moderno Verde</h4>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #27ae60;">#27ae60</div>
+                            <div class="color-box" style="background: #2c3e50;">#2c3e50</div>
+                            <div class="color-box" style="background: #f39c12;">#f39c12</div>
+                            <div class="color-box" style="background: #ffffff; color: #333;">#ffffff</div>
+                        </div>
+                        <button class="use-palette-btn" onclick="usePalette('green')">Usar Paleta</button>
+                    </div>
+
+                    <!-- Paleta 3 -->
+                    <div class="palette-card">
+                        <h4 style="color: var(--accent-purple);">Tech Púrpura</h4>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #8e44ad;">#8e44ad</div>
+                            <div class="color-box" style="background: #34495e;">#34495e</div>
+                            <div class="color-box" style="background: #e67e22;">#e67e22</div>
+                            <div class="color-box" style="background: #ecf0f1; color: #333;">#ecf0f1</div>
+                        </div>
+                        <button class="use-palette-btn" onclick="usePalette('purple')">Usar Paleta</button>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 40px;">💡 Tips y Trucos</h3>
+                <div class="reference-card" style="margin-top: 20px;">
+                    <p style="line-height: 2; color: var(--text-secondary);">
+                        ✓ Usa <code>max-width</code> para limitar el ancho del contenido<br>
+                        ✓ <code>margin: 0 auto</code> centra elementos horizontalmente<br>
+                        ✓ <code>line-height: 1.6</code> mejora la legibilidad<br>
+                        ✓ Colores hexadecimales: <code>#RRGGBB</code><br>
+                        ✓ Usa Google Fonts para fuentes profesionales<br>
+                        ✓ <code>box-shadow</code> agrega profundidad sutil<br>
+                        ✓ <code>:hover</code> para efectos interactivos<br>
+                        ✓ DevTools (F12) para experimentar en vivo
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: FLEXBOX (AVANZADO) -->
+        <div id="tab-flexbox" class="tab-content">
+            <div class="card">
+                <h2>🎯 Flexbox para Layouts Profesionales</h2>
+                <p style="font-size: 1.2em; margin-bottom: 10px; color: var(--text-secondary);">
+                    Flexbox es la herramienta moderna para crear layouts flexibles y responsivos
+                </p>
+                <p style="padding: 15px; background: var(--bg-code); border-left: 4px solid var(--accent-orange); border-radius: 8px; margin-bottom: 30px;">
+                    <strong style="color: var(--accent-orange);">💡 Nivel Avanzado:</strong> Este contenido es para estudiantes que dominan lo básico y quieren crear CVs con layouts de 2 columnas profesionales.
+                </p>
+
+                <h3>📊 Antes vs Después: Layout con Flexbox</h3>
+                <div class="flexbox-demo-container">
+                    <!-- ANTES: 1 columna tradicional -->
+                    <div class="flex-preview">
+                        <h4>❌ ANTES: Sin Flexbox (1 columna)</h4>
+                        <div class="cv-layout-before">
+                            <div style="font-weight: 700; color: #2c3e50;">👤 Foto y Contacto</div>
+                            <div style="font-weight: 700; color: #2c3e50;">📋 Sobre Mí</div>
+                            <div style="font-weight: 700; color: #2c3e50;">💼 Experiencia</div>
+                            <div style="font-weight: 700; color: #2c3e50;">🎓 Educación</div>
+                            <div style="font-weight: 700; color: #2c3e50;">⚡ Habilidades</div>
+                        </div>
+                    </div>
+
+                    <!-- DESPUÉS: 2 columnas con Flexbox -->
+                    <div class="flex-preview">
+                        <h4>✅ DESPUÉS: Con Flexbox (2 columnas)</h4>
+                        <div class="cv-layout-after">
+                            <div class="cv-sidebar">
+                                <div>👤 Foto</div>
+                                <div>📧 Contacto</div>
+                                <div>⚡ Habilidades</div>
+                            </div>
+                            <div class="cv-main-content">
+                                <div>📋 Sobre Mí</div>
+                                <div>💼 Experiencia</div>
+                                <div>🎓 Educación</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 40px;">🎮 Flexbox Playground</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 20px;">
+                    Experimenta con las propiedades de Flexbox y ve cómo afectan el layout
+                </p>
+
+                <div class="flexbox-playground">
+                    <div class="flex-demo-box" id="flexDemoBox">
+                        <div class="flex-item">1</div>
+                        <div class="flex-item">2</div>
+                        <div class="flex-item">3</div>
+                    </div>
+
+                    <div class="flex-controls-grid">
+                        <div class="flex-control">
+                            <label>🔄 flex-direction</label>
+                            <select id="flexDirection" onchange="updateFlexbox()">
+                                <option value="row">row (horizontal)</option>
+                                <option value="column">column (vertical)</option>
+                                <option value="row-reverse">row-reverse</option>
+                                <option value="column-reverse">column-reverse</option>
+                            </select>
+                        </div>
+
+                        <div class="flex-control">
+                            <label>↔️ justify-content (eje principal)</label>
+                            <select id="justifyContent" onchange="updateFlexbox()">
+                                <option value="flex-start">flex-start (inicio)</option>
+                                <option value="center">center (centro)</option>
+                                <option value="flex-end">flex-end (final)</option>
+                                <option value="space-between">space-between</option>
+                                <option value="space-around">space-around</option>
+                                <option value="space-evenly">space-evenly</option>
+                            </select>
+                        </div>
+
+                        <div class="flex-control">
+                            <label>↕️ align-items (eje cruzado)</label>
+                            <select id="alignItems" onchange="updateFlexbox()">
+                                <option value="stretch">stretch (estirar)</option>
+                                <option value="flex-start">flex-start (inicio)</option>
+                                <option value="center">center (centro)</option>
+                                <option value="flex-end">flex-end (final)</option>
+                            </select>
+                        </div>
+
+                        <div class="flex-control">
+                            <label>📏 gap: <span class="control-value" id="gapValue">10px</span></label>
+                            <input type="range" id="gapSlider" min="0" max="50" value="10" oninput="updateFlexbox()">
+                        </div>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 30px;">📝 Código CSS Generado:</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyFlexboxCSS()">Copiar</button>
+                    <pre id="flexboxCode"></pre>
+                </div>
+
+                <h3 style="margin-top: 40px;">💻 Ejemplo Práctico: CV con Sidebar</h3>
+                <div class="code-block">
+                    <button class="copy-button" onclick="copyFlexboxExample()">Copiar Ejemplo Completo</button>
+                    <pre id="flexboxExample">/* HTML Structure:
+&lt;div class="cv-container"&gt;
+    &lt;aside class="sidebar"&gt;
+        &lt;!-- Foto, contacto, habilidades --&gt;
+    &lt;/aside&gt;
+    &lt;main class="main-content"&gt;
+        &lt;!-- Experiencia, educación --&gt;
+    &lt;/main&gt;
+&lt;/div&gt;
+*/
+
+.cv-container {
+    display: flex;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.sidebar {
+    flex: 0 0 300px;  /* No crece, no encoge, 300px fijo */
+    background: #2c3e50;
+    padding: 30px;
+    color: white;
+}
+
+.main-content {
+    flex: 1;  /* Toma todo el espacio restante */
+    background: white;
+    padding: 30px;
+}
+
+/* Responsive: En móviles, cambiar a 1 columna */
+@media (max-width: 768px) {
+    .cv-container {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        flex: 1;  /* Ocupa todo el ancho */
+    }
+}</pre>
+                </div>
+
+                <div style="margin-top: 30px; padding: 20px; background: var(--bg-code); border-radius: 10px; border-left: 4px solid var(--accent-green);">
+                    <h4 style="color: var(--accent-green); margin-bottom: 10px;">🚀 Propiedades Clave de Flexbox:</h4>
+                    <ul style="color: var(--text-secondary); line-height: 2;">
+                        <li><code style="color: var(--accent-orange);">display: flex</code> - Activa Flexbox en el contenedor</li>
+                        <li><code style="color: var(--accent-orange);">flex-direction</code> - Dirección del eje principal (row/column)</li>
+                        <li><code style="color: var(--accent-orange);">justify-content</code> - Alineación en eje principal</li>
+                        <li><code style="color: var(--accent-orange);">align-items</code> - Alineación en eje cruzado</li>
+                        <li><code style="color: var(--accent-orange);">gap</code> - Espacio entre elementos</li>
+                        <li><code style="color: var(--accent-orange);">flex</code> - Cuánto espacio toma cada hijo (en los items)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TAB SWITCHING
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // CV BASE HTML
+        const cvHTML = `
+            <header>
+                <h1>Juan Pérez García</h1>
+                <p>Ingeniero de Software</p>
+            </header>
+            <main>
+                <section>
+                    <h2>Sobre Mí</h2>
+                    <p>Soy estudiante apasionado por la tecnología, buscando oportunidades para crecer en el desarrollo web y crear soluciones innovadoras.</p>
+                    <p>Me interesa especialmente el desarrollo frontend y la experiencia de usuario.</p>
+                </section>
+                <section>
+                    <h2>Experiencia y Educación</h2>
+                    <ul>
+                        <li><strong>Universidad de Colima</strong> - 2023-2027<br>Ingeniería de Software</li>
+                        <li><strong>Proyecto Final</strong> - 2024<br>Sistema web de gestión académica</li>
+                        <li><strong>Bootcamp HTML/CSS</strong> - 2023<br>Certificación en desarrollo frontend</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Habilidades</h2>
+                    <ul>
+                        <li>HTML5 y CSS3</li>
+                        <li>JavaScript básico</li>
+                        <li>Trabajo en equipo</li>
+                        <li>Resolución de problemas</li>
+                    </ul>
+                </section>
+                <section>
+                    <h2>Contacto</h2>
+                    <form>
+                        <p>
+                            <label for="email">Tu Email:</label><br>
+                            <input type="email" id="email" placeholder="ejemplo@correo.com">
+                        </p>
+                        <p>
+                            <label for="nombre">Tu Nombre:</label><br>
+                            <input type="text" id="nombre" placeholder="¿Quién eres?">
+                        </p>
+                        <button type="submit">Enviar Mensaje</button>
+                    </form>
+                    <p><strong>Email directo:</strong> juan.perez@ejemplo.com</p>
+                </section>
+            </main>
+            <footer>
+                <p>&copy; 2024 Juan Pérez. CV creado con HTML5.</p>
+                <p><a href="https://github.com/juanperez">Ver mi GitHub</a></p>
+            </footer>
+        `;
+
+        // Insertar HTML en ambos CVs
+        document.getElementById('cvWithoutCSS').innerHTML = cvHTML;
+        document.getElementById('cvWithCSS').innerHTML = cvHTML;
+
+        // SLIDER LOGIC
+        const slider = document.getElementById('sliderHandle');
+        const wrapper = document.querySelector('.comparison-wrapper');
+        const cvWithoutWrapper = document.getElementById('cvWithoutCSSWrapper');
+
+        let isDragging = false;
+
+        function updateSlider(clientX) {
+            const rect = wrapper.getBoundingClientRect();
+            let x = clientX - rect.left;
+            let percentage = (x / rect.width) * 100;
+            
+            percentage = Math.max(0, Math.min(100, percentage));
+            
+            slider.style.left = percentage + '%';
+            cvWithoutWrapper.style.width = percentage + '%';
+        }
+
+        slider.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            updateSlider(e.clientX);
+        });
+
+        slider.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+
+        document.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            updateSlider(e.touches[0].clientX);
+        });
+
+        // Initialize at 50%
+        slider.style.left = '50%';
+        cvWithoutWrapper.style.width = '50%';
+
+        // ==================== TAB 2: STEP BY STEP ====================
+        const cssSteps = [
+            {
+                title: "Paso 1: Background de Página",
+                description: "El body es el contenedor principal de todo el documento. Un background suave (#f4f4f4) es más agradable que el blanco puro. Esto crea una base profesional para tu CV.",
+                css: `body {
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}`
+            },
+            {
+                title: "Paso 2: Fuente General con Google Fonts",
+                description: "Arial es una fuente limpia y profesional. El color #333 (gris oscuro) es más suave que el negro puro. Line-height: 1.6 mejora la legibilidad del texto.",
+                css: `body {
+    font-family: Arial, sans-serif;
+    color: #333;
+    line-height: 1.6;
+}`
+            },
+            {
+                title: "Paso 3: Estiliza tu Nombre (header h1)",
+                description: "El h1 es tu nombre - lo más importante del CV. Un tamaño grande (2.5em) y color profesional (#2c3e50) lo hace destacar. Text-align: center lo centra horizontalmente.",
+                css: `header h1 {
+    color: #2c3e50;
+    font-size: 2.5em;
+    text-align: center;
+    margin-bottom: 5px;
+}`
+            },
+            {
+                title: "Paso 4: Título Profesional (header p)",
+                description: "El subtítulo (Ingeniero de Software) debe ser visible pero no competir con el nombre. Un color gris (#7f8c8d) y tamaño moderado (1.2em) funciona bien.",
+                css: `header p {
+    text-align: center;
+    color: #7f8c8d;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}`
+            },
+            {
+                title: "Paso 5: Container Principal (main)",
+                description: "El max-width limita el ancho del CV (800px) para que sea cómodo de leer. Margin: 0 auto lo centra. El background blanco destaca sobre el gris. Box-shadow agrega profundidad sutil.",
+                css: `main {
+    max-width: 800px;
+    margin: 20px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}`
+            },
+            {
+                title: "Paso 6: Espaciado entre Secciones",
+                description: "Cada sección (Sobre mí, Experiencia, etc.) necesita espacio para respirar. El margin-bottom crea separación visual entre secciones.",
+                css: `section {
+    margin-bottom: 30px;
+}`
+            },
+            {
+                title: "Paso 7: Títulos de Sección (h2)",
+                description: "Los h2 marcan cada sección del CV. Un color azul y un borde inferior los hace destacar sin ser invasivos. El padding-bottom crea espacio antes del borde.",
+                css: `h2 {
+    color: #3498db;
+    font-size: 1.8em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}`
+            },
+            {
+                title: "Paso 8: Párrafos en 'Sobre Mí'",
+                description: "Los párrafos necesitan un espaciado de línea cómodo para leer. El margin-bottom separa párrafos consecutivos.",
+                css: `p {
+    line-height: 1.8;
+    margin-bottom: 15px;
+}`
+            },
+            {
+                title: "Paso 9: Listas (Experiencia y Habilidades)",
+                description: "Quitamos los bullets predeterminados (list-style: none) y damos espacio a cada elemento. El borde azul izquierdo marca cada item visualmente.",
+                css: `ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+li {
+    margin-bottom: 15px;
+    padding-left: 20px;
+    border-left: 3px solid #3498db;
+}`
+            },
+            {
+                title: "Paso 10: Formulario de Contacto",
+                description: "Los inputs y textarea necesitan estilos consistentes. El padding interno hace que sean más fáciles de usar. El border-radius suaviza las esquinas.",
+                css: `input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+}
+
+button {
+    background: #3498db;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+}`
+            },
+            {
+                title: "Paso 11: Footer",
+                description: "El footer cierra el CV. Un fondo oscuro con texto claro crea contraste. El text-align: center alinea todo el contenido.",
+                css: `footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 0 0 10px 10px;
+}
+
+footer a {
+    color: #3498db;
+    text-decoration: none;
+}`
+            },
+            {
+                title: "Paso 12: Hover Effects",
+                description: "Los efectos hover mejoran la interactividad. Cuando pasas el mouse sobre el botón o enlaces, cambian de color. Esto indica que son clicables.",
+                css: `button:hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+footer a:hover {
+    color: #5dade2;
+    text-decoration: underline;
+}`
+            }
+        ];
+
+        let currentStep = 0;
+        let accumulatedCSS = '';
+
+        function initStepByStep() {
+            document.getElementById('cvStepPreview').innerHTML = cvHTML;
+            showStep(0);
+        }
+
+        function showStep(step) {
+            currentStep = step;
+            const stepData = cssSteps[step];
+
+            // Update UI
+            document.getElementById('stepTitle').textContent = stepData.title;
+            document.getElementById('stepDescription').textContent = stepData.description;
+            document.getElementById('codeContent').textContent = stepData.css;
+            document.getElementById('stepCounter').textContent = `Paso ${step + 1} / ${cssSteps.length}`;
+
+            // Update progress bar
+            const progress = ((step + 1) / cssSteps.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+
+            // Update buttons
+            document.getElementById('prevBtn').disabled = (step === 0);
+            document.getElementById('nextBtn').disabled = (step === cssSteps.length - 1);
+
+            // Apply accumulated CSS
+            applyAccumulatedCSS();
+        }
+
+        function applyAccumulatedCSS() {
+            accumulatedCSS = '';
+            for (let i = 0; i <= currentStep; i++) {
+                accumulatedCSS += cssSteps[i].css + '\n\n';
+            }
+
+            const styleId = 'stepStyles';
+            let styleTag = document.getElementById(styleId);
+            if (!styleTag) {
+                styleTag = document.createElement('style');
+                styleTag.id = styleId;
+                document.head.appendChild(styleTag);
+            }
+            styleTag.textContent = '#cvStepPreview { ' + accumulatedCSS + ' }';
+        }
+
+        function previousStep() {
+            if (currentStep > 0) {
+                showStep(currentStep - 1);
+            }
+        }
+
+        function nextStep() {
+            if (currentStep < cssSteps.length - 1) {
+                showStep(currentStep + 1);
+            }
+        }
+
+        function applyCurrentCSS() {
+            applyAccumulatedCSS();
+        }
+
+        function copyCode() {
+            const code = document.getElementById('codeContent').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                btn.textContent = '✓ Copiado';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copiar';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // ==================== TAB 3: BOX MODEL ====================
+        function updateBoxModel() {
+            const margin = document.getElementById('marginSlider').value;
+            const border = document.getElementById('borderSlider').value;
+            const padding = document.getElementById('paddingSlider').value;
+
+            document.getElementById('marginValue').textContent = margin + 'px';
+            document.getElementById('borderValue').textContent = border + 'px';
+            document.getElementById('paddingValue').textContent = padding + 'px';
+
+            document.getElementById('boxMargin').style.padding = margin + 'px';
+            document.getElementById('boxBorder').style.borderWidth = border + 'px';
+            document.getElementById('boxPadding').style.padding = padding + 'px';
+
+            const code = `.mi-elemento {
+    margin: ${margin}px;
+    border: ${border}px solid #e74c3c;
+    padding: ${padding}px;
+}`;
+            document.getElementById('boxModelCode').textContent = code;
+        }
+
+        function copyBoxModelCSS() {
+            const code = document.getElementById('boxModelCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                btn.textContent = '✓ Copiado';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copiar';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // ==================== TAB 4: REFERENCE ====================
+        function usePalette(palette) {
+            const palettes = {
+                blue: `/* Paleta Profesional Azul */
+:root {
+    --primary: #2c3e50;
+    --secondary: #3498db;
+    --accent: #e74c3c;
+    --background: #ecf0f1;
+}`,
+                green: `/* Paleta Moderno Verde */
+:root {
+    --primary: #27ae60;
+    --secondary: #2c3e50;
+    --accent: #f39c12;
+    --background: #ffffff;
+}`,
+                purple: `/* Paleta Tech Púrpura */
+:root {
+    --primary: #8e44ad;
+    --secondary: #34495e;
+    --accent: #e67e22;
+    --background: #ecf0f1;
+}`
+            };
+
+            navigator.clipboard.writeText(palettes[palette]).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copiado al Portapapeles';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // ==================== INITIALIZATION ====================
+        // Initialize Box Model on page load
+        updateBoxModel();
+        // Initialize Step by Step
+        initStepByStep();
+        // Initialize Flexbox
+        updateFlexbox();
+
+        // ==================== TAB 5: FLEXBOX ====================
+        function updateFlexbox() {
+            const box = document.getElementById('flexDemoBox');
+            const direction = document.getElementById('flexDirection').value;
+            const justify = document.getElementById('justifyContent').value;
+            const align = document.getElementById('alignItems').value;
+            const gap = document.getElementById('gapSlider').value;
+
+            document.getElementById('gapValue').textContent = gap + 'px';
+
+            box.style.flexDirection = direction;
+            box.style.justifyContent = justify;
+            box.style.alignItems = align;
+            box.style.gap = gap + 'px';
+
+            // Update code display
+            const code = `.contenedor {
+    display: flex;
+    flex-direction: ${direction};
+    justify-content: ${justify};
+    align-items: ${align};
+    gap: ${gap}px;
+}`;
+            document.getElementById('flexboxCode').textContent = code;
+        }
+
+        function copyFlexboxCSS() {
+            const code = document.getElementById('flexboxCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                btn.textContent = '✓ Copiado';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copiar';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        function copyFlexboxExample() {
+            const code = document.getElementById('flexboxExample').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                btn.textContent = '✓ Copiado Ejemplo Completo';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = 'Copiar Ejemplo Completo';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>

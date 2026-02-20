@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 5: Introducción a CSS - Programación para Web</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0d1117;
+            --bg-card: #161b22;
+            --bg-code: #1c2128;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-blue: #58a6ff;
+            --accent-green: #3fb950;
+            --accent-orange: #d29922;
+            --accent-purple: #bc8cff;
+            --accent-red: #f85149;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            max-width: 1200px;
+            height: 100%;
+            max-height: 800px;
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 60px;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .slide-title {
+            font-size: 3.5em;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+        }
+
+        .slide-subtitle {
+            font-size: 1.5em;
+            color: var(--text-secondary);
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .slide-content h2 {
+            font-size: 2.5em;
+            color: var(--accent-blue);
+            margin-bottom: 30px;
+        }
+
+        .slide-content h3 {
+            font-size: 2em;
+            color: var(--accent-green);
+            margin: 30px 0 20px;
+        }
+
+        .slide-content p {
+            font-size: 1.5em;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .slide-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .slide-content li {
+            font-size: 1.5em;
+            line-height: 2;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .slide-content li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        .code-example {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 1.3em;
+            line-height: 1.8;
+        }
+
+        .code-example .comment {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .code-example .selector {
+            color: #7ee787;
+        }
+
+        .code-example .property {
+            color: #79c0ff;
+        }
+
+        .code-example .value {
+            color: #a5d6ff;
+        }
+
+        .demo-boxes {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .demo-box {
+            flex: 1;
+            text-align: center;
+        }
+
+        .demo-box-title {
+            font-size: 1.2em;
+            color: var(--accent-orange);
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .demo-preview {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .demo-preview.no-css {
+            font-family: 'Times New Roman', serif;
+            color: black;
+            font-size: 1em;
+        }
+
+        .demo-preview.with-css {
+            font-family: Arial, sans-serif;
+            color: #2c3e50;
+            font-size: 1.5em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .highlight-box {
+            background: var(--bg-code);
+            border-left: 5px solid var(--accent-green);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .highlight-box strong {
+            color: var(--accent-green);
+            font-size: 1.2em;
+        }
+
+        .slide-nav {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 60px;
+        }
+
+        .nav-button {
+            background: var(--accent-blue);
+            color: var(--bg-dark);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Fira Code', monospace;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            background: var(--accent-green);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(63, 185, 80, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 1.3em;
+            color: var(--accent-orange);
+            font-weight: 700;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: var(--bg-code);
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+        }
+
+        .card h4 {
+            color: var(--accent-green);
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+
+        .css-anatomy {
+            background: var(--bg-dark);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 40px;
+            margin: 30px 0;
+            position: relative;
+        }
+
+        .css-anatomy .label {
+            position: absolute;
+            color: var(--accent-orange);
+            font-weight: 700;
+            font-size: 1.1em;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .css-anatomy .arrow {
+            position: absolute;
+            color: var(--accent-orange);
+            font-size: 1.5em;
+        }
+
+        @media (max-width: 1024px) {
+            .slide {
+                padding: 40px;
+            }
+
+            .slide-title {
+                font-size: 2.5em;
+            }
+
+            .slide-content h2 {
+                font-size: 2em;
+            }
+
+            .slide-content p,
+            .slide-content li {
+                font-size: 1.2em;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- SLIDE 1: TÍTULO -->
+        <div class="slide active">
+            <div class="slide-header">
+                <div class="slide-title">Sesión 5: CSS</div>
+                <div class="slide-subtitle">Cascading Style Sheets</div>
+            </div>
+            <div class="slide-content" style="text-align: center;">
+                <h2 style="font-size: 4em; margin-bottom: 40px;">🎨</h2>
+                <p style="font-size: 2em; color: var(--text-primary);">
+                    De HTML básico a diseño profesional
+                </p>
+                <div style="margin-top: 50px; padding: 30px; background: var(--bg-code); border-radius: 15px; border: 2px solid var(--accent-blue);">
+                    <p style="font-size: 1.3em;">
+                        <strong style="color: var(--accent-blue);">Ing. Ricardo Jaramillo Velasco</strong><br>
+                        Programación para Web - Semestre 4<br>
+                        Universidad de Colima
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 2: ¿QUÉ ES CSS? -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>¿Qué es CSS?</h2>
+                <p><strong style="color: var(--accent-blue);">CSS</strong> (Cascading Style Sheets) es el lenguaje que controla <strong>cómo se ve</strong> tu página web.</p>
+                
+                <div class="highlight-box">
+                    <p><strong>🎯 Analogía:</strong></p>
+                    <p style="font-size: 1.3em; margin-top: 15px;">
+                        HTML = Estructura de una casa (paredes, puertas, ventanas)<br>
+                        CSS = Decoración (colores, muebles, estilo)
+                    </p>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <p><strong style="color: var(--accent-green);">CSS te permite:</strong></p>
+                    <ul>
+                        <li>Cambiar colores, fuentes y tamaños</li>
+                        <li>Controlar espaciado y alineación</li>
+                        <li>Crear layouts (diseños de página)</li>
+                        <li>Agregar efectos y animaciones</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 3: SEPARACIÓN CONTENIDO/PRESENTACIÓN -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Separación: Contenido vs Presentación</h2>
+                
+                <div class="grid-2">
+                    <div class="card">
+                        <h4>📄 HTML = Contenido</h4>
+                        <p>Define QUÉ es cada cosa:<br>
+                        - Este es un título<br>
+                        - Este es un párrafo<br>
+                        - Esta es una lista</p>
+                    </div>
+
+                    <div class="card">
+                        <h4>🎨 CSS = Presentación</h4>
+                        <p>Define CÓMO se ve:<br>
+                        - El título es azul y grande<br>
+                        - El párrafo tiene espaciado<br>
+                        - La lista tiene bullets azules</p>
+                    </div>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 40px;">
+                    <p><strong>💡 Ventaja Principal:</strong></p>
+                    <p style="font-size: 1.3em; margin-top: 15px;">
+                        Puedes cambiar TODO el diseño de tu sitio web modificando solo el archivo CSS, sin tocar el HTML.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 4: 3 FORMAS DE INCLUIR CSS -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>3 Formas de Incluir CSS</h2>
+
+                <h3>1. CSS Externo (Recomendado ✅)</h3>
+                <div class="code-example">
+<span class="comment">&lt;!-- En el HTML --&gt;</span>
+<span class="selector">&lt;link</span> <span class="property">rel</span>=<span class="value">"stylesheet"</span> <span class="property">href</span>=<span class="value">"style.css"</span><span class="selector">&gt;</span>
+                </div>
+
+                <h3>2. CSS Interno</h3>
+                <div class="code-example">
+<span class="selector">&lt;style&gt;</span>
+    <span class="property">h1</span> { <span class="property">color</span>: <span class="value">blue</span>; }
+<span class="selector">&lt;/style&gt;</span>
+                </div>
+
+                <h3>3. CSS Inline (Evitar ❌)</h3>
+                <div class="code-example">
+<span class="selector">&lt;h1</span> <span class="property">style</span>=<span class="value">"color: blue;"</span><span class="selector">&gt;</span>Título<span class="selector">&lt;/h1&gt;</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 5: ANATOMÍA DE UNA REGLA CSS -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Anatomía de una Regla CSS</h2>
+
+                <div class="css-anatomy" style="font-family: 'Fira Code', monospace; font-size: 2em; text-align: center; padding: 60px;">
+                    <span class="label" style="top: 10px; left: 180px;">Selector ↓</span>
+                    <span style="color: #7ee787;">h1</span> 
+                    <span style="color: var(--text-primary);">{</span><br>
+                    <span class="label" style="top: 60px; left: 40px;">Propiedad ↓</span>
+                    <span style="padding-left: 60px; color: #79c0ff;">color</span><span style="color: var(--text-primary);">:</span> 
+                    <span style="color: #a5d6ff;">blue</span><span style="color: var(--text-primary);">;</span>
+                    <span class="label" style="top: 60px; right: 180px;">← Valor</span>
+                    <br>
+                    <span style="color: var(--text-primary);">}</span>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <ul style="font-size: 1.3em;">
+                        <li><strong style="color: var(--accent-green);">Selector:</strong> A qué elemento aplicar los estilos</li>
+                        <li><strong style="color: var(--accent-green);">Propiedad:</strong> Qué característica cambiar (color, tamaño, etc.)</li>
+                        <li><strong style="color: var(--accent-green);">Valor:</strong> Cómo cambiarla (blue, 20px, etc.)</li>
+                        <li><strong style="color: var(--accent-red);">Punto y coma (;):</strong> Termina cada declaración</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 6: SELECTORES BÁSICOS -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>Selectores Básicos</h2>
+
+                <div class="grid-2">
+                    <div>
+                        <h3>Selector de Elemento</h3>
+                        <div class="code-example">
+<span class="selector">h1</span> {
+    <span class="property">color</span>: <span class="value">blue</span>;
+}
+                        </div>
+                        <p>Aplica a TODOS los &lt;h1&gt;</p>
+                    </div>
+
+                    <div>
+                        <h3>Selector de Clase</h3>
+                        <div class="code-example">
+<span class="selector">.importante</span> {
+    <span class="property">color</span>: <span class="value">red</span>;
+}
+                        </div>
+                        <p>Aplica a class="importante"</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h3>Selector de ID</h3>
+                    <div class="code-example">
+<span class="selector">#titulo-principal</span> {
+    <span class="property">font-size</span>: <span class="value">48px</span>;
+}
+                    </div>
+                    <p>Aplica a id="titulo-principal" (único en la página)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SLIDE 7: DEMO VISUAL -->
+        <div class="slide">
+            <div class="slide-content">
+                <h2>El Poder del CSS</h2>
+                <p style="text-align: center; margin-bottom: 40px;">El mismo HTML, diferentes estilos</p>
+
+                <div class="demo-boxes">
+                    <div class="demo-box">
+                        <div class="demo-box-title">❌ Sin CSS</div>
+                        <div class="demo-preview no-css">
+                            <div>
+                                <h2 style="font-size: 1.5em; margin-bottom: 10px;">Juan Pérez</h2>
+                                <p>Ingeniero de Software</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="demo-box">
+                        <div class="demo-box-title">✅ Con CSS</div>
+                        <div class="demo-preview with-css">
+                            <div>
+                                <h2 style="font-size: 2em; margin-bottom: 15px; color: white;">Juan Pérez</h2>
+                                <p style="color: rgba(255,255,255,0.9);">Ingeniero de Software</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="highlight-box" style="margin-top: 50px;">
+                    <p style="font-size: 1.5em; text-align: center;">
+                        <strong>🎯 Hoy transformarán su CV de básico a profesional usando CSS</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="slide-nav">
+            <button class="nav-button" id="prevBtn" onclick="previousSlide()">◀ Anterior</button>
+            <div class="slide-counter" id="slideCounter">1 / 7</div>
+            <button class="nav-button" id="nextBtn" onclick="nextSlide()">Siguiente ▶</button>
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            if (n < 0) currentSlide = 0;
+            
+            slides[currentSlide].classList.add('active');
+            
+            // Update counter
+            document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+            
+            // Update buttons
+            document.getElementById('prevBtn').disabled = (currentSlide === 0);
+            document.getElementById('nextBtn').disabled = (currentSlide === totalSlides - 1);
+        }
+
+        function nextSlide() {
+            currentSlide++;
+            showSlide(currentSlide);
+        }
+
+        function previousSlide() {
+            currentSlide--;
+            showSlide(currentSlide);
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                if (currentSlide < totalSlides - 1) nextSlide();
+            }
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                if (currentSlide > 0) previousSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
