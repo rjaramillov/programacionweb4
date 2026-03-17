@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blazor Interactive Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f3f4f6;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            background: #f3f4f6;
+            border: none;
+            font-size: 1em;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+
+        .tab:hover {
+            background: #e5e7eb;
+        }
+
+        .tab.active {
+            background: white;
+            color: #3b82f6;
+            border-bottom: 3px solid #3b82f6;
+        }
+
+        .content {
+            display: none;
+        }
+
+        .content.active {
+            display: block;
+        }
+
+        .split-view {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 600px;
+        }
+
+        .code-panel {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .code-panel h3 {
+            color: #569cd6;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .code-block {
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block .keyword {
+            color: #569cd6;
+        }
+
+        .code-block .string {
+            color: #ce9178;
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+        }
+
+        .code-block .type {
+            color: #4ec9b0;
+        }
+
+        .code-block .directive {
+            color: #c586c0;
+        }
+
+        .result-panel {
+            background: #f9fafb;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .result-panel h3 {
+            color: #1e3a8a;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .demo-box {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+            color: #1e40af;
+        }
+
+        .alert-success {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            color: #065f46;
+        }
+
+        .alert-warning {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            color: #92400e;
+        }
+
+        .output {
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            min-height: 50px;
+        }
+
+        .list-item {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-item.completed {
+            opacity: 0.6;
+            text-decoration: line-through;
+        }
+
+        .counter-display {
+            font-size: 4em;
+            font-weight: bold;
+            text-align: center;
+            color: #3b82f6;
+            margin: 20px 0;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            color: #1e40af;
+        }
+
+        @media (max-width: 768px) {
+            .split-view {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                border-bottom: 1px solid #e5e7eb;
+            }
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔥 Blazor Interactive Playground</h1>
+            <p>Experimenta con los conceptos clave de Blazor en tiempo real</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="showTab(0)">1. @bind</button>
+            <button class="tab" onclick="showTab(1)">2. @onclick</button>
+            <button class="tab" onclick="showTab(2)">3. @if</button>
+            <button class="tab" onclick="showTab(3)">4. @foreach</button>
+            <button class="tab" onclick="showTab(4)">5. Completo</button>
+        </div>
+
+        <!-- TAB 1: DATA BINDING -->
+        <div class="content active" id="tab-0">
+            <div class="split-view">
+                <div class="code-panel">
+                    <h3>📝 Código Blazor</h3>
+                    <div class="code-block"><span class="directive">@page</span> <span class="string">"/saludo"</span>
+
+<span class="comment">&lt;!-- Input conectado a variable --&gt;</span>
+&lt;div&gt;
+    &lt;label&gt;Tu nombre:&lt;/label&gt;
+    &lt;input <span class="directive">@bind</span>=<span class="string">"nombre"</span> /&gt;
+&lt;/div&gt;
+
+<span class="comment">&lt;!-- La variable se muestra automáticamente --&gt;</span>
+&lt;p&gt;¡Hola, <span class="directive">@nombre</span>! Bienvenido a Blazor 🔥&lt;/p&gt;
+
+<span class="directive">@code</span> {
+    <span class="comment">// Variable privada</span>
+    <span class="keyword">private string</span> nombre = <span class="string">"Estudiante"</span>;
+}</div>
+                    <div class="info-box">
+                        <strong>💡 @bind:</strong> Conecta un input con una variable. Cuando escribes, la variable se actualiza automáticamente (two-way binding).
+                    </div>
+                </div>
+
+                <div class="result-panel">
+                    <h3>🎯 Resultado en Vivo</h3>
+                    <div class="demo-box">
+                        <div class="form-group">
+                            <label>Tu nombre:</label>
+                            <input type="text" class="form-control" id="nombre-input" value="Estudiante" oninput="updateNombre()">
+                        </div>
+                        <div class="output" id="nombre-output">
+                            ¡Hola, <strong>Estudiante</strong>! Bienvenido a Blazor 🔥
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        ✏️ <strong>Pruébalo:</strong> Escribe tu nombre en el input y observa cómo cambia el mensaje automáticamente.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: EVENT HANDLING -->
+        <div class="content" id="tab-1">
+            <div class="split-view">
+                <div class="code-panel">
+                    <h3>📝 Código Blazor</h3>
+                    <div class="code-block"><span class="directive">@page</span> <span class="string">"/contador"</span>
+
+<span class="comment">&lt;!-- Mostrar el valor actual --&gt;</span>
+&lt;h1&gt;<span class="directive">@contador</span>&lt;/h1&gt;
+
+<span class="comment">&lt;!-- Botones con eventos @onclick --&gt;</span>
+&lt;button <span class="directive">@onclick</span>=<span class="string">"Incrementar"</span>&gt;+1&lt;/button&gt;
+&lt;button <span class="directive">@onclick</span>=<span class="string">"Decrementar"</span>&gt;-1&lt;/button&gt;
+&lt;button <span class="directive">@onclick</span>=<span class="string">"Resetear"</span>&gt;Reset&lt;/button&gt;
+
+<span class="directive">@code</span> {
+    <span class="keyword">private int</span> contador = 0;
+    
+    <span class="keyword">private void</span> Incrementar()
+    {
+        contador++;
+    }
+    
+    <span class="keyword">private void</span> Decrementar()
+    {
+        contador--;
+    }
+    
+    <span class="keyword">private void</span> Resetear()
+    {
+        contador = 0;
+    }
+}</div>
+                    <div class="info-box">
+                        <strong>💡 @onclick:</strong> Conecta un botón con un método. Cuando haces click, ejecuta el método automáticamente.
+                    </div>
+                </div>
+
+                <div class="result-panel">
+                    <h3>🎯 Resultado en Vivo</h3>
+                    <div class="demo-box">
+                        <div class="counter-display" id="counter-display">0</div>
+                        <div style="text-align: center;">
+                            <button class="btn btn-success" onclick="incrementCounter()">+1</button>
+                            <button class="btn btn-danger" onclick="decrementCounter()">-1</button>
+                            <button class="btn btn-secondary" onclick="resetCounter()">Reset</button>
+                        </div>
+                    </div>
+                    <div class="alert alert-info">
+                        🖱️ <strong>Pruébalo:</strong> Haz click en los botones y observa cómo cambia el contador.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: CONDITIONAL RENDERING -->
+        <div class="content" id="tab-2">
+            <div class="split-view">
+                <div class="code-panel">
+                    <h3>📝 Código Blazor</h3>
+                    <div class="code-block"><span class="directive">@page</span> <span class="string">"/formulario"</span>
+
+&lt;div&gt;
+    &lt;label&gt;Edad:&lt;/label&gt;
+    &lt;input <span class="directive">@bind</span>=<span class="string">"edad"</span> type=<span class="string">"number"</span> /&gt;
+&lt;/div&gt;
+
+<span class="comment">&lt;!-- Renderizado condicional con @if --&gt;</span>
+<span class="directive">@if</span> (edad &gt;= 18)
+{
+    &lt;div class=<span class="string">"alert alert-success"</span>&gt;
+        ✅ Eres mayor de edad
+    &lt;/div&gt;
+}
+<span class="keyword">else</span>
+{
+    &lt;div class=<span class="string">"alert alert-warning"</span>&gt;
+        ⚠️ Eres menor de edad
+    &lt;/div&gt;
+}
+
+<span class="directive">@code</span> {
+    <span class="keyword">private int</span> edad = 0;
+}</div>
+                    <div class="info-box">
+                        <strong>💡 @if:</strong> Muestra u oculta contenido según una condición. El contenido se renderiza dinámicamente.
+                    </div>
+                </div>
+
+                <div class="result-panel">
+                    <h3>🎯 Resultado en Vivo</h3>
+                    <div class="demo-box">
+                        <div class="form-group">
+                            <label>Edad:</label>
+                            <input type="number" class="form-control" id="edad-input" value="0" oninput="updateEdad()">
+                        </div>
+                        <div id="edad-output"></div>
+                    </div>
+                    <div class="alert alert-info">
+                        🔢 <strong>Pruébalo:</strong> Cambia la edad y observa cómo el mensaje cambia según la condición.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: LISTS -->
+        <div class="content" id="tab-3">
+            <div class="split-view">
+                <div class="code-panel">
+                    <h3>📝 Código Blazor</h3>
+                    <div class="code-block"><span class="directive">@page</span> <span class="string">"/tareas"</span>
+
+&lt;input <span class="directive">@bind</span>=<span class="string">"nuevaTarea"</span> /&gt;
+&lt;button <span class="directive">@onclick</span>=<span class="string">"AgregarTarea"</span>&gt;Agregar&lt;/button&gt;
+
+<span class="comment">&lt;!-- Loop con @foreach --&gt;</span>
+<span class="directive">@foreach</span> (<span class="keyword">var</span> tarea <span class="keyword">in</span> tareas)
+{
+    &lt;div&gt;
+        <span class="directive">@tarea</span>
+        &lt;button <span class="directive">@onclick</span>=<span class="string">"() =&gt; Eliminar(tarea)"</span>&gt;
+            🗑️
+        &lt;/button&gt;
+    &lt;/div&gt;
+}
+
+<span class="directive">@code</span> {
+    <span class="keyword">private string</span> nuevaTarea = <span class="string">""</span>;
+    <span class="keyword">private</span> List&lt;<span class="keyword">string</span>&gt; tareas = <span class="keyword">new</span>();
+    
+    <span class="keyword">private void</span> AgregarTarea()
+    {
+        <span class="keyword">if</span> (!<span class="keyword">string</span>.IsNullOrWhiteSpace(nuevaTarea))
+        {
+            tareas.Add(nuevaTarea);
+            nuevaTarea = <span class="string">""</span>;
+        }
+    }
+    
+    <span class="keyword">private void</span> Eliminar(<span class="keyword">string</span> tarea)
+    {
+        tareas.Remove(tarea);
+    }
+}</div>
+                    <div class="info-box">
+                        <strong>💡 @foreach:</strong> Itera sobre una lista y genera HTML para cada elemento. Como un for loop pero en el HTML.
+                    </div>
+                </div>
+
+                <div class="result-panel">
+                    <h3>🎯 Resultado en Vivo</h3>
+                    <div class="demo-box">
+                        <div class="form-group">
+                            <label>Nueva tarea:</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" class="form-control" id="tarea-input" placeholder="Escribe una tarea..." onkeypress="if(event.key==='Enter') addTarea()">
+                                <button class="btn btn-primary" onclick="addTarea()">Agregar</button>
+                            </div>
+                        </div>
+                        <div id="tareas-list"></div>
+                    </div>
+                    <div class="alert alert-info">
+                        📝 <strong>Pruébalo:</strong> Agrega tareas y elimínalas. Observa cómo @foreach actualiza la lista automáticamente.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: COMPONENTE COMPLETO -->
+        <div class="content" id="tab-4">
+            <div class="split-view">
+                <div class="code-panel">
+                    <h3>📝 Código Blazor Completo</h3>
+                    <div class="code-block"><span class="directive">@page</span> <span class="string">"/registro"</span>
+
+&lt;h3&gt;Formulario de Registro&lt;/h3&gt;
+
+&lt;input <span class="directive">@bind</span>=<span class="string">"nombre"</span> placeholder=<span class="string">"Nombre"</span> /&gt;
+&lt;input <span class="directive">@bind</span>=<span class="string">"edad"</span> type=<span class="string">"number"</span> /&gt;
+&lt;input <span class="directive">@bind</span>=<span class="string">"email"</span> type=<span class="string">"email"</span> /&gt;
+
+&lt;button <span class="directive">@onclick</span>=<span class="string">"Registrar"</span>&gt;Registrar&lt;/button&gt;
+
+<span class="directive">@if</span> (registroExitoso)
+{
+    &lt;div class=<span class="string">"alert alert-success"</span>&gt;
+        ✅ Registro exitoso: <span class="directive">@nombre</span>
+    &lt;/div&gt;
+}
+
+<span class="directive">@if</span> (registros.Count &gt; 0)
+{
+    &lt;h4&gt;Usuarios Registrados:&lt;/h4&gt;
+    <span class="directive">@foreach</span> (<span class="keyword">var</span> reg <span class="keyword">in</span> registros)
+    {
+        &lt;div&gt;<span class="directive">@reg</span>&lt;/div&gt;
+    }
+}
+
+<span class="directive">@code</span> {
+    <span class="keyword">private string</span> nombre = <span class="string">""</span>;
+    <span class="keyword">private int</span> edad = 0;
+    <span class="keyword">private string</span> email = <span class="string">""</span>;
+    <span class="keyword">private bool</span> registroExitoso = <span class="keyword">false</span>;
+    <span class="keyword">private</span> List&lt;<span class="keyword">string</span>&gt; registros = <span class="keyword">new</span>();
+    
+    <span class="keyword">private void</span> Registrar()
+    {
+        <span class="keyword">if</span> (!<span class="keyword">string</span>.IsNullOrWhiteSpace(nombre))
+        {
+            registros.Add(<span class="string">$"{nombre} - {edad} años"</span>);
+            registroExitoso = <span class="keyword">true</span>;
+            nombre = <span class="string">""</span>;
+            edad = 0;
+            email = <span class="string">""</span>;
+        }
+    }
+}</div>
+                    <div class="info-box">
+                        <strong>💡 Componente completo:</strong> Combina @bind, @onclick, @if y @foreach para crear una aplicación funcional.
+                    </div>
+                </div>
+
+                <div class="result-panel">
+                    <h3>🎯 Resultado en Vivo</h3>
+                    <div class="demo-box">
+                        <h4>Formulario de Registro</h4>
+                        <div class="form-group">
+                            <label>Nombre:</label>
+                            <input type="text" class="form-control" id="reg-nombre" placeholder="Tu nombre">
+                        </div>
+                        <div class="form-group">
+                            <label>Edad:</label>
+                            <input type="number" class="form-control" id="reg-edad" placeholder="Tu edad">
+                        </div>
+                        <div class="form-group">
+                            <label>Email:</label>
+                            <input type="email" class="form-control" id="reg-email" placeholder="tu@email.com">
+                        </div>
+                        <button class="btn btn-primary" onclick="registrarUsuario()">Registrar</button>
+                        
+                        <div id="registro-mensaje"></div>
+                        <div id="registros-list"></div>
+                    </div>
+                    <div class="alert alert-info">
+                        👤 <strong>Pruébalo:</strong> Completa el formulario y registra varios usuarios. Observa cómo se integran todos los conceptos.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // TAB NAVIGATION
+        function showTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.content');
+            
+            tabs.forEach((tab, i) => {
+                if (i === index) {
+                    tab.classList.add('active');
+                    contents[i].classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                    contents[i].classList.remove('active');
+                }
+            });
+        }
+
+        // TAB 1: DATA BINDING
+        function updateNombre() {
+            const nombre = document.getElementById('nombre-input').value;
+            document.getElementById('nombre-output').innerHTML = `¡Hola, <strong>${nombre}</strong>! Bienvenido a Blazor 🔥`;
+        }
+
+        // TAB 2: EVENT HANDLING
+        let counter = 0;
+        function updateCounterDisplay() {
+            const display = document.getElementById('counter-display');
+            display.textContent = counter;
+            display.style.color = counter > 0 ? '#10b981' : counter < 0 ? '#ef4444' : '#3b82f6';
+        }
+
+        function incrementCounter() {
+            counter++;
+            updateCounterDisplay();
+        }
+
+        function decrementCounter() {
+            counter--;
+            updateCounterDisplay();
+        }
+
+        function resetCounter() {
+            counter = 0;
+            updateCounterDisplay();
+        }
+
+        // TAB 3: CONDITIONAL RENDERING
+        function updateEdad() {
+            const edad = parseInt(document.getElementById('edad-input').value) || 0;
+            const output = document.getElementById('edad-output');
+            
+            if (edad >= 18) {
+                output.innerHTML = '<div class="alert alert-success">✅ Eres mayor de edad</div>';
+            } else if (edad > 0) {
+                output.innerHTML = '<div class="alert alert-warning">⚠️ Eres menor de edad</div>';
+            } else {
+                output.innerHTML = '';
+            }
+        }
+
+        // TAB 4: LISTS
+        let tareas = [];
+        function renderTareas() {
+            const list = document.getElementById('tareas-list');
+            if (tareas.length === 0) {
+                list.innerHTML = '<div class="alert alert-info">No hay tareas. ¡Agrega una!</div>';
+            } else {
+                list.innerHTML = tareas.map((tarea, index) => `
+                    <div class="list-item">
+                        <span>${tarea}</span>
+                        <button class="btn btn-danger" onclick="removeTarea(${index})">🗑️ Eliminar</button>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function addTarea() {
+            const input = document.getElementById('tarea-input');
+            const tarea = input.value.trim();
+            if (tarea) {
+                tareas.push(tarea);
+                input.value = '';
+                renderTareas();
+            }
+        }
+
+        function removeTarea(index) {
+            tareas.splice(index, 1);
+            renderTareas();
+        }
+
+        // TAB 5: COMPONENTE COMPLETO
+        let registros = [];
+        function registrarUsuario() {
+            const nombre = document.getElementById('reg-nombre').value.trim();
+            const edad = document.getElementById('reg-edad').value;
+            const email = document.getElementById('reg-email').value.trim();
+            
+            if (nombre && edad && email) {
+                registros.push({ nombre, edad, email });
+                
+                // Mostrar mensaje de éxito
+                document.getElementById('registro-mensaje').innerHTML = `
+                    <div class="alert alert-success">
+                        ✅ Registro exitoso: <strong>${nombre}</strong>
+                    </div>
+                `;
+                
+                // Limpiar formulario
+                document.getElementById('reg-nombre').value = '';
+                document.getElementById('reg-edad').value = '';
+                document.getElementById('reg-email').value = '';
+                
+                // Renderizar lista
+                renderRegistros();
+                
+                // Ocultar mensaje después de 3 segundos
+                setTimeout(() => {
+                    document.getElementById('registro-mensaje').innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        function renderRegistros() {
+            const list = document.getElementById('registros-list');
+            if (registros.length > 0) {
+                list.innerHTML = `
+                    <h4 style="margin-top: 30px; color: #1e3a8a;">Usuarios Registrados:</h4>
+                    ${registros.map(reg => `
+                        <div class="list-item">
+                            <div>
+                                <strong>${reg.nombre}</strong> - ${reg.edad} años
+                                <br>
+                                <small style="color: #6b7280;">${reg.email}</small>
+                            </div>
+                        </div>
+                    `).join('')}
+                `;
+            }
+        }
+
+        // Inicializar
+        renderTareas();
+        updateEdad();
+    </script>
+</body>
+</html>

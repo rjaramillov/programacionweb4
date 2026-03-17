@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sesión 7 - Visual Studio + C# + Blazor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 60px;
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #e5e7eb;
+        }
+
+        .section-number {
+            color: #3b82f6;
+            font-size: 0.9em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 3em;
+            color: #1e3a8a;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 2.2em;
+            color: #1e3a8a;
+            margin-bottom: 30px;
+        }
+
+        h3 {
+            font-size: 1.8em;
+            color: #3b82f6;
+            margin-bottom: 20px;
+            margin-top: 30px;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .big-emoji {
+            font-size: 8em;
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .list-item {
+            background: #f9fafb;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            border-left: 4px solid #3b82f6;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .list-item strong {
+            color: #1e3a8a;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.95em;
+            line-height: 1.5;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .code-block .keyword {
+            color: #569cd6;
+        }
+
+        .code-block .string {
+            color: #ce9178;
+        }
+
+        .code-block .comment {
+            color: #6a9955;
+        }
+
+        .code-block .type {
+            color: #4ec9b0;
+        }
+
+        .highlight-box {
+            background: #dbeafe;
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: #1e40af;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .warning-box h4 {
+            color: #92400e;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .success-box {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .success-box h4 {
+            color: #065f46;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .steps {
+            counter-reset: step;
+        }
+
+        .step {
+            counter-increment: step;
+            background: #f9fafb;
+            padding: 20px 20px 20px 60px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            position: relative;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        .step::before {
+            content: counter(step);
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            background: #3b82f6;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .comparison-item {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .comparison-item.left {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+        }
+
+        .comparison-item.right {
+            background: #d1fae5;
+            border: 2px solid #10b981;
+        }
+
+        .comparison-item h4 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        ul {
+            padding-left: 30px;
+            line-height: 1.8;
+            font-size: 1.1em;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: #f9fafb;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s;
+        }
+
+        .card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .card h4 {
+            color: #1e3a8a;
+            margin-bottom: 10px;
+        }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #3b82f6;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .back-to-top:hover {
+            background: #2563eb;
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .two-column, .comparison, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+
+            .section {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+
+        p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SECCIÓN 1: Portada -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-number">Sesión 7 | Lunes 9 marzo 2026</div>
+                <h1>🚀 Entrando al Mundo de Blazor</h1>
+                <p style="font-size: 1.3em; color: #6b7280;">Visual Studio + C# + Blazor en 120 minutos</p>
+            </div>
+            <div class="big-emoji">💻</div>
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 style="color: #3b82f6;">Programación para Web</h3>
+                <p style="font-size: 1.2em; color: #6b7280; margin-top: 10px;">
+                    Universidad de Colima | Ing. Ricardo Jaramillo Velasco
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: Agenda -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📋 Agenda de Hoy</h2>
+            </div>
+            <div class="list-item">
+                <strong>🔧 Parte 1 (30-40 min):</strong> Visual Studio - Instalación y Setup
+            </div>
+            <div class="list-item">
+                <strong>💎 Parte 2 (30-40 min):</strong> C# Express - Solo lo necesario para Blazor
+            </div>
+            <div class="list-item">
+                <strong>⚡ Parte 3 (40-50 min):</strong> Intro a Blazor + Tu Primer Componente
+            </div>
+            <div class="highlight-box">
+                <h4>🎯 Objetivo del día:</h4>
+                <p style="font-size: 1.1em; line-height: 1.6;">
+                    Al final de esta sesión, tendrás Visual Studio instalado, entenderás lo básico de C#, 
+                    y habrás creado tu primer componente Blazor interactivo.
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: ¿Por qué Blazor? -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🤔 ¿Por qué Blazor?</h2>
+            </div>
+            <div class="two-column">
+                <div class="column">
+                    <h3>Recordemos las exposiciones...</h3>
+                    <div class="list-item">
+                        <strong>React:</strong> JavaScript
+                    </div>
+                    <div class="list-item">
+                        <strong>Angular:</strong> TypeScript (JavaScript)
+                    </div>
+                    <div class="list-item">
+                        <strong>Next.js:</strong> JavaScript
+                    </div>
+                    <div class="warning-box" style="margin-top: 20px;">
+                        <h4>⚠️ Problema:</h4>
+                        <p>Todos requieren aprender JavaScript o TypeScript</p>
+                    </div>
+                </div>
+                <div class="column">
+                    <h3>Blazor es diferente</h3>
+                    <div class="success-box">
+                        <h4>✨ Usa C#</h4>
+                        <p>Escribes código en C# (que ya conocen de otros cursos o aprenderán hoy)</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>🌐 Compila a WebAssembly</h4>
+                        <p>Corre en el navegador, como JavaScript</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>🔗 Full Stack con .NET</h4>
+                        <p>Mismo lenguaje frontend y backend</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 4: PARTE 1 Header -->
+        <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="section-header" style="border-bottom-color: rgba(255,255,255,0.3);">
+                <h1 style="color: white;">PARTE 1</h1>
+                <h2 style="color: white;">🔧 Visual Studio</h2>
+            </div>
+            <div class="big-emoji">🛠️</div>
+            <div style="text-align: center; margin-top: 40px;">
+                <p style="font-size: 1.5em;">
+                    Nuestro entorno de desarrollo
+                </p>
+                <p style="font-size: 1.2em; margin-top: 20px; opacity: 0.8;">
+                    30-40 minutos
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 5: Instalación VS -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📥 Instalando Visual Studio 2022</h2>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    Descarga desde: <strong>visualstudio.microsoft.com</strong>
+                    <br>Versión: <strong>Visual Studio 2022 Community</strong> (Gratis)
+                </div>
+                <div class="step">
+                    Al instalar, selecciona: <strong>"ASP.NET and web development"</strong>
+                    <br>Esto incluye todo lo necesario para Blazor
+                </div>
+                <div class="step">
+                    Tiempo de instalación: <strong>~20-30 minutos</strong>
+                    <br>(Dependiendo de tu internet)
+                </div>
+            </div>
+            <div class="warning-box">
+                <h4>⚠️ Si ya lo tienes instalado:</h4>
+                <p>Abre Visual Studio Installer → Modify → Verifica que "ASP.NET and web development" esté seleccionado</p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 6: Tour VS -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🗺️ Tour Rápido de Visual Studio</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card">
+                    <div class="card-icon">📁</div>
+                    <h4>Solution Explorer</h4>
+                    <p>Tus archivos y proyectos</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">✏️</div>
+                    <h4>Editor</h4>
+                    <p>Donde escribes código</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🐛</div>
+                    <h4>Debugger</h4>
+                    <p>Encuentra errores</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">▶️</div>
+                    <h4>Run</h4>
+                    <p>Ejecuta tu app</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">📦</div>
+                    <h4>NuGet</h4>
+                    <p>Paquetes y librerías</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon">🔍</div>
+                    <h4>IntelliSense</h4>
+                    <p>Autocompletado inteligente</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 7: PARTE 2 Header -->
+        <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="section-header" style="border-bottom-color: rgba(255,255,255,0.3);">
+                <h1 style="color: white;">PARTE 2</h1>
+                <h2 style="color: white;">💎 C# Express</h2>
+            </div>
+            <div class="big-emoji">🔤</div>
+            <div style="text-align: center; margin-top: 40px;">
+                <p style="font-size: 1.5em;">
+                    Solo lo necesario para Blazor
+                </p>
+                <p style="font-size: 1.2em; margin-top: 20px; opacity: 0.8;">
+                    30-40 minutos
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 8: Variables -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📦 Variables en C#</h2>
+            </div>
+            <div class="code-block"><span class="comment">// Declarar variables con tipo</span>
+<span class="keyword">string</span> nombre = <span class="string">"Juan"</span>;
+<span class="keyword">int</span> edad = 21;
+<span class="keyword">double</span> promedio = 9.5;
+<span class="keyword">bool</span> esActivo = <span class="keyword">true</span>;
+
+<span class="comment">// O dejar que C# infiera el tipo</span>
+<span class="keyword">var</span> apellido = <span class="string">"Pérez"</span>;  <span class="comment">// C# sabe que es string</span>
+<span class="keyword">var</span> semestre = 4;         <span class="comment">// C# sabe que es int</span></div>
+            <div class="comparison">
+                <div class="comparison-item left">
+                    <h4>❌ JavaScript</h4>
+                    <code>let edad = 21;</code>
+                    <p style="margin-top: 10px;">Sin tipo definido</p>
+                </div>
+                <div class="comparison-item right">
+                    <h4>✅ C#</h4>
+                    <code>int edad = 21;</code>
+                    <p style="margin-top: 10px;">Tipo definido y seguro</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 9: Métodos -->
+        <div class="section">
+            <div class="section-header">
+                <h2>⚙️ Métodos (Funciones)</h2>
+            </div>
+            <div class="code-block"><span class="comment">// Método que no retorna nada (void)</span>
+<span class="keyword">void</span> Saludar()
+{
+    Console.WriteLine(<span class="string">"¡Hola!"</span>);
+}
+
+<span class="comment">// Método que retorna un valor</span>
+<span class="keyword">int</span> Sumar(<span class="keyword">int</span> a, <span class="keyword">int</span> b)
+{
+    <span class="keyword">return</span> a + b;
+}
+
+<span class="comment">// Método con parámetros opcionales</span>
+<span class="keyword">string</span> Saludar(<span class="keyword">string</span> nombre = <span class="string">"Usuario"</span>)
+{
+    <span class="keyword">return</span> <span class="string">$"Hola, {nombre}!"</span>;
+}</div>
+            <div class="highlight-box">
+                <h4>💡 En Blazor usarás métodos para:</h4>
+                <ul>
+                    <li>Manejar clicks de botones</li>
+                    <li>Procesar formularios</li>
+                    <li>Actualizar datos en pantalla</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 10: Clases -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🏗️ Clases y Propiedades</h2>
+            </div>
+            <div class="code-block"><span class="comment">// Definir una clase</span>
+<span class="keyword">public class</span> <span class="type">Estudiante</span>
+{
+    <span class="comment">// Propiedades (con get y set automáticos)</span>
+    <span class="keyword">public string</span> Nombre { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public int</span> Edad { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    <span class="keyword">public double</span> Promedio { <span class="keyword">get</span>; <span class="keyword">set</span>; }
+    
+    <span class="comment">// Método de la clase</span>
+    <span class="keyword">public string</span> ObtenerInfo()
+    {
+        <span class="keyword">return</span> <span class="string">$"{Nombre} - {Edad} años"</span>;
+    }
+}
+
+<span class="comment">// Usar la clase</span>
+<span class="keyword">var</span> estudiante = <span class="keyword">new</span> <span class="type">Estudiante</span>
+{
+    Nombre = <span class="string">"María"</span>,
+    Edad = 20,
+    Promedio = 9.2
+};</div>
+        </div>
+
+        <!-- SECCIÓN 11: PARTE 3 Header -->
+        <div class="section" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <div class="section-header" style="border-bottom-color: rgba(255,255,255,0.3);">
+                <h1 style="color: white;">PARTE 3</h1>
+                <h2 style="color: white;">⚡ ¡Blazor!</h2>
+            </div>
+            <div class="big-emoji">🔥</div>
+            <div style="text-align: center; margin-top: 40px;">
+                <p style="font-size: 1.5em;">
+                    Tu primer componente interactivo
+                </p>
+                <p style="font-size: 1.2em; margin-top: 20px; opacity: 0.8;">
+                    40-50 minutos
+                </p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 12: Crear proyecto -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🆕 Creando tu Primer Proyecto Blazor</h2>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    Abre Visual Studio 2022
+                </div>
+                <div class="step">
+                    Click en <strong>"Create a new project"</strong>
+                </div>
+                <div class="step">
+                    Busca: <strong>"Blazor Server App"</strong>
+                </div>
+                <div class="step">
+                    Nombre: <strong>MiPrimerBlazor</strong>
+                    <br>Location: Donde quieras guardar
+                </div>
+                <div class="step">
+                    Framework: <strong>.NET 8.0</strong> (o la más reciente)
+                </div>
+                <div class="step">
+                    Click <strong>"Create"</strong> → ¡Espera unos segundos!
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 13: Estructura Blazor -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📂 Estructura del Proyecto Blazor</h2>
+            </div>
+            <div class="two-column">
+                <div class="column">
+                    <h3>Archivos Importantes:</h3>
+                    <div class="list-item">
+                        <strong>📁 Pages/</strong><br>
+                        Tus páginas/componentes
+                    </div>
+                    <div class="list-item">
+                        <strong>📄 Counter.razor</strong><br>
+                        Ejemplo de contador
+                    </div>
+                    <div class="list-item">
+                        <strong>📄 Index.razor</strong><br>
+                        Página principal (home)
+                    </div>
+                    <div class="list-item">
+                        <strong>📁 wwwroot/</strong><br>
+                        CSS, imágenes, archivos estáticos
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="highlight-box">
+                        <h4>🎯 Ahora mismo:</h4>
+                        <ol style="line-height: 2;">
+                            <li>Click en ▶️ (Run/Play)</li>
+                            <li>Se abrirá el navegador</li>
+                            <li>Verás la app funcionando</li>
+                            <li>Click en "Counter"</li>
+                            <li>Click en "Click me"</li>
+                        </ol>
+                    </div>
+                    <div class="success-box">
+                        <h4>✅ ¡Funciona!</h4>
+                        <p>Ya tienes una app Blazor corriendo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 14: Anatomía componente -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🔬 Anatomía de un Componente Blazor</h2>
+            </div>
+            <div class="code-block">@page <span class="string">"/contador"</span>
+
+<span class="comment">&lt;!-- Parte HTML/Razor --&gt;</span>
+&lt;h3&gt;Mi Contador&lt;/h3&gt;
+&lt;p&gt;Valor actual: <strong>@valorActual</strong>&lt;/p&gt;
+&lt;button @onclick=<span class="string">"Incrementar"</span>&gt;+1&lt;/button&gt;
+
+@code {
+    <span class="comment">// Parte C# (lógica)</span>
+    <span class="keyword">private int</span> valorActual = 0;
+    
+    <span class="keyword">private void</span> Incrementar()
+    {
+        valorActual++;
+    }
+}</div>
+            <div class="highlight-box">
+                <h4>💡 Componentes clave:</h4>
+                <ul>
+                    <li><strong>@page "/ruta"</strong> - Define la URL</li>
+                    <li><strong>@valorActual</strong> - Muestra una variable</li>
+                    <li><strong>@onclick</strong> - Maneja clicks</li>
+                    <li><strong>@code { }</strong> - Tu código C#</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 15: Ejercicio -->
+        <div class="section">
+            <div class="section-header">
+                <h2>✏️ Ejercicio Práctico</h2>
+            </div>
+            <div class="highlight-box">
+                <h4>🎯 Tu turno: Crea un componente "Saludo"</h4>
+                <p style="margin-bottom: 15px;">Sigue estos pasos:</p>
+                <div class="steps">
+                    <div class="step">
+                        Click derecho en <strong>Pages/</strong> → Add → Razor Component
+                    </div>
+                    <div class="step">
+                        Nombre: <strong>Saludo.razor</strong>
+                    </div>
+                    <div class="step">
+                        Copia el código de la siguiente sección
+                    </div>
+                    <div class="step">
+                        Guarda (Ctrl+S)
+                    </div>
+                    <div class="step">
+                        Corre la app (F5)
+                    </div>
+                    <div class="step">
+                        Ve a: <strong>http://localhost:[puerto]/saludo</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 16: Código ejercicio -->
+        <div class="section">
+            <div class="section-header">
+                <h2>💻 Código del Ejercicio</h2>
+            </div>
+            <div class="code-block">@page <span class="string">"/saludo"</span>
+
+&lt;h3&gt;👋 Generador de Saludos&lt;/h3&gt;
+
+&lt;div&gt;
+    &lt;label&gt;Tu nombre:&lt;/label&gt;
+    &lt;input @bind=<span class="string">"nombre"</span> /&gt;
+&lt;/div&gt;
+
+&lt;button @onclick=<span class="string">"Saludar"</span>&gt;Saludar&lt;/button&gt;
+
+&lt;p&gt;<strong>@mensaje</strong>&lt;/p&gt;
+
+@code {
+    <span class="keyword">private string</span> nombre = <span class="string">""</span>;
+    <span class="keyword">private string</span> mensaje = <span class="string">""</span>;
+    
+    <span class="keyword">private void</span> Saludar()
+    {
+        <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrWhiteSpace(nombre))
+        {
+            mensaje = <span class="string">"Por favor escribe tu nombre"</span>;
+        }
+        <span class="keyword">else</span>
+        {
+            mensaje = <span class="string">$"¡Hola, {nombre}! Bienvenido a Blazor 🔥"</span>;
+        }
+    }
+}</div>
+        </div>
+
+        <!-- SECCIÓN 17: Recap -->
+        <div class="section">
+            <div class="section-header">
+                <h2>📝 Recap: ¿Qué aprendimos hoy?</h2>
+            </div>
+            <div class="list-item">
+                <strong>✅ Visual Studio:</strong> Instalado y configurado para desarrollo web
+            </div>
+            <div class="list-item">
+                <strong>✅ C# Básico:</strong> Variables, métodos, clases (suficiente para Blazor)
+            </div>
+            <div class="list-item">
+                <strong>✅ Blazor:</strong> Qué es, por qué usarlo, estructura de proyecto
+            </div>
+            <div class="list-item">
+                <strong>✅ Componentes:</strong> Creaste tu primer componente interactivo
+            </div>
+            <div class="list-item">
+                <strong>✅ Data Binding:</strong> @bind para conectar inputs con variables
+            </div>
+            <div class="list-item">
+                <strong>✅ Event Handling:</strong> @onclick para manejar clicks
+            </div>
+        </div>
+
+        <!-- SECCIÓN 18: Próxima sesión -->
+        <div class="section">
+            <div class="section-header">
+                <h2>🔜 Próxima Sesión</h2>
+            </div>
+            <div class="highlight-box">
+                <h4>Viernes 13 marzo:</h4>
+                <ul style="font-size: 1.2em;">
+                    <li>Exposiciones de equipos (SQL y NoSQL)</li>
+                    <li>Blazor: Componentes más complejos</li>
+                    <li>Data Binding avanzado</li>
+                    <li>Listas y loops</li>
+                </ul>
+            </div>
+            <div class="warning-box">
+                <h4>📚 Para el viernes:</h4>
+                <ul>
+                    <li>Practica modificando el componente Saludo</li>
+                    <li>Agrega más campos (edad, ciudad)</li>
+                    <li>Experimenta con @if y condiciones</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 19: Cierre -->
+        <div class="section" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-align: center;">
+            <div class="section-header" style="border: none;">
+                <h1 style="color: white;">¡Excelente Trabajo! 🎉</h1>
+            </div>
+            <div class="big-emoji">🚀</div>
+            <div style="margin-top: 40px;">
+                <h3 style="color: white; margin-bottom: 20px;">Ya eres un Blazor developer</h3>
+                <p style="font-size: 1.3em;">
+                    Nos vemos el viernes para continuar
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        ↑
+    </div>
+</body>
+</html>
