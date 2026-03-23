@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial APIs REST en Blazor - 20 Pasos Completos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #3b82f6; --primary-dark: #1e40af; --success: #10b981;
+            --warning: #f59e0b; --danger: #ef4444;
+            --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+            --gray-300: #d1d5db; --gray-600: #4b5563; --gray-700: #374151;
+            --gray-800: #1f2937; --gray-900: #111827;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; padding: 20px;
+        }
+        .container {
+            max-width: 1400px; margin: 0 auto; background: white;
+            border-radius: 16px; overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            display: flex; min-height: calc(100vh - 40px);
+        }
+        .sidebar {
+            width: 320px; background: var(--gray-900); color: white;
+            padding: 30px 0; overflow-y: auto; flex-shrink: 0;
+        }
+        .sidebar-header {
+            padding: 0 30px 30px;
+            border-bottom: 2px solid var(--gray-700);
+        }
+        .sidebar-header h1 {
+            font-size: 1.5em; margin-bottom: 10px; color: var(--primary);
+        }
+        .sidebar-header p { color: var(--gray-300); font-size: 0.9em; }
+        .progress-bar { margin: 20px 30px; }
+        .progress-text {
+            display: flex; justify-content: space-between;
+            margin-bottom: 8px; font-size: 0.85em; color: var(--gray-300);
+        }
+        .progress-track {
+            height: 8px; background: var(--gray-700);
+            border-radius: 10px; overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 10px; transition: width 0.5s ease;
+        }
+        .nav-section { margin: 20px 0; }
+        .nav-section-title {
+            padding: 15px 30px 10px; font-size: 0.75em;
+            text-transform: uppercase; letter-spacing: 1px;
+            color: var(--gray-400); font-weight: 600;
+        }
+        .nav-item {
+            padding: 12px 30px; cursor: pointer;
+            display: flex; align-items: center; gap: 12px;
+            color: var(--gray-300); transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover { background: var(--gray-800); color: white; }
+        .nav-item.active {
+            background: var(--gray-800);
+            border-left-color: var(--primary); color: white;
+        }
+        .nav-item.completed { color: var(--success); }
+        .step-icon {
+            width: 24px; height: 24px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75em; font-weight: bold; flex-shrink: 0;
+        }
+        .nav-item .step-icon {
+            background: var(--gray-700); color: var(--gray-400);
+        }
+        .nav-item.completed .step-icon {
+            background: var(--success); color: white;
+        }
+        .nav-item.active .step-icon {
+            background: var(--primary); color: white;
+        }
+        .main-content {
+            flex: 1; padding: 50px; overflow-y: auto;
+        }
+        .step-content { display: none; }
+        .step-content.active {
+            display: block; animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-header { margin-bottom: 40px; }
+        .step-number {
+            display: inline-block; padding: 6px 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; border-radius: 20px;
+            font-size: 0.85em; font-weight: 600; margin-bottom: 15px;
+        }
+        .step-title {
+            font-size: 2.5em; color: var(--gray-900); margin-bottom: 15px;
+        }
+        .step-objective {
+            background: linear-gradient(135deg, #667eea15, #764ba215);
+            padding: 20px 25px; border-radius: 12px;
+            border-left: 4px solid var(--primary); margin: 30px 0;
+        }
+        .step-objective h3 {
+            color: var(--primary); margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .step-objective p { color: var(--gray-700); line-height: 1.6; }
+        .code-section { margin: 30px 0; }
+        .code-section h3 {
+            color: var(--gray-800); margin-bottom: 15px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .code-header {
+            background: var(--gray-800); color: white;
+            padding: 10px 20px; border-radius: 8px 8px 0 0;
+            font-size: 0.85em; display: flex;
+            justify-content: space-between; align-items: center;
+        }
+        .copy-btn {
+            background: var(--gray-700); border: none;
+            padding: 6px 12px; border-radius: 4px;
+            color: white; cursor: pointer; font-size: 0.85em;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover { background: var(--gray-600); }
+        .copy-btn.copied { background: var(--success); }
+        pre[class*="language-"] {
+            margin: 0; border-radius: 0 0 8px 8px; font-size: 0.9em;
+        }
+        .info-box {
+            padding: 20px; border-radius: 12px; margin: 25px 0;
+        }
+        .info-box.checkpoint {
+            background: #d1fae515; border-left: 4px solid var(--success);
+        }
+        .info-box.explanation {
+            background: #dbeafe15; border-left: 4px solid var(--primary);
+        }
+        .info-box.warning {
+            background: #fef3c715; border-left: 4px solid var(--warning);
+        }
+        .info-box h4 {
+            margin-bottom: 10px; display: flex;
+            align-items: center; gap: 8px;
+        }
+        .info-box.checkpoint h4 { color: var(--success); }
+        .info-box.explanation h4 { color: var(--primary); }
+        .info-box.warning h4 { color: var(--warning); }
+        .info-box p, .info-box ul {
+            color: var(--gray-700); line-height: 1.7;
+        }
+        .info-box ul { margin-left: 20px; margin-top: 10px; }
+        .info-box li { margin: 8px 0; }
+        .navigation-buttons {
+            display: flex; justify-content: space-between;
+            margin-top: 50px; padding-top: 30px;
+            border-top: 2px solid var(--gray-200);
+        }
+        .nav-btn {
+            padding: 14px 28px; border: none; border-radius: 8px;
+            font-size: 1em; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s;
+        }
+        .nav-btn.prev {
+            background: var(--gray-200); color: var(--gray-700);
+        }
+        .nav-btn.prev:hover { background: var(--gray-300); }
+        .nav-btn.next {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        .nav-btn.next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .complete-btn {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white; padding: 14px 28px; border: none;
+            border-radius: 8px; font-size: 1em; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center;
+            gap: 8px; margin: 30px 0; transition: all 0.3s;
+        }
+        .complete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.3);
+        }
+        @media (max-width: 968px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; max-height: 300px; }
+            .main-content { padding: 30px 20px; }
+            .step-title { font-size: 2em; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>🌐 APIs REST en Blazor</h1>
+                <p>Tutorial Completo - 20 Pasos</p>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-text">
+                    <span id="progress-text">Paso 1 de 20</span>
+                    <span id="progress-percent">5%</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width: 5%"></div>
+                </div>
+            </div>
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Parte A: API Pública</div>
+                    <div class="nav-item active" data-step="1"><div class="step-icon">1</div><span>Crear proyecto Blazor</span></div>
+                    <div class="nav-item" data-step="2"><div class="step-icon">2</div><span>Configurar HttpClient</span></div>
+                    <div class="nav-item" data-step="3"><div class="step-icon">3</div><span>Crear modelo Clima</span></div>
+                    <div class="nav-item" data-step="4"><div class="step-icon">4</div><span>Crear componente Weather</span></div>
+                    <div class="nav-item" data-step="5"><div class="step-icon">5</div><span>Inyectar HttpClient</span></div>
+                    <div class="nav-item" data-step="6"><div class="step-icon">6</div><span>Hacer GET request</span></div>
+                    <div class="nav-item" data-step="7"><div class="step-icon">7</div><span>Deserializar JSON</span></div>
+                    <div class="nav-item" data-step="8"><div class="step-icon">8</div><span>Mostrar datos</span></div>
+                </div>
+                <div class="nav-section">
+                    <div class="nav-section-title">Parte B: Tu Propia API</div>
+                    <div class="nav-item" data-step="9"><div class="step-icon">9</div><span>Crear proyecto Web API</span></div>
+                    <div class="nav-item" data-step="10"><div class="step-icon">10</div><span>Crear modelo Producto</span></div>
+                    <div class="nav-item" data-step="11"><div class="step-icon">11</div><span>Lista en memoria</span></div>
+                    <div class="nav-item" data-step="12"><div class="step-icon">12</div><span>Crear ProductosController</span></div>
+                    <div class="nav-item" data-step="13"><div class="step-icon">13</div><span>GET: Listar productos</span></div>
+                    <div class="nav-item" data-step="14"><div class="step-icon">14</div><span>Probar en Swagger</span></div>
+                    <div class="nav-item" data-step="15"><div class="step-icon">15</div><span>Configurar CORS</span></div>
+                    <div class="nav-item" data-step="16"><div class="step-icon">16</div><span>Conectar Blazor a API</span></div>
+                    <div class="nav-item" data-step="17"><div class="step-icon">17</div><span>POST: Crear producto</span></div>
+                    <div class="nav-item" data-step="18"><div class="step-icon">18</div><span>Consumir POST desde Blazor</span></div>
+                    <div class="nav-item" data-step="19"><div class="step-icon">19</div><span>DELETE: Eliminar producto</span></div>
+                    <div class="nav-item" data-step="20"><div class="step-icon">20</div><span>Loading states</span></div>
+                </div>
+            </nav>
+        </div>
+        <div class="main-content" id="main-content">
+            <!-- Los 20 pasos se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+    <script>
+        // Contenido de los 20 pasos
+        const pasos = {
+            1: {
+                titulo: "Crear Proyecto Blazor Server",
+                objetivo: "Crear un nuevo proyecto Blazor Server que será la base para consumir APIs REST.",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Pasos en Visual Studio</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Instrucciones</h4>
+                            <ul>
+                                <li>Abre <strong>Visual Studio 2022</strong></li>
+                                <li>Click en <strong>"Create a new project"</strong></li>
+                                <li>Busca y selecciona <strong>"Blazor Server App"</strong></li>
+                                <li>Nombre del proyecto: <code>WeatherBlazor</code></li>
+                                <li>Framework: <strong>.NET 8.0</strong></li>
+                                <li>Click <strong>"Create"</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Debes tener un proyecto Blazor Server creado. Presiona <strong>F5</strong> para verificar que corre correctamente. Deberías ver la página de inicio de Blazor con "Welcome to your new app".</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué acabas de hacer?</h4>
+                        <p>Creaste una aplicación Blazor Server, que es un framework para crear aplicaciones web interactivas usando C# en lugar de JavaScript. Ahora tienes la base lista para agregar funcionalidad de consumo de APIs.</p>
+                    </div>
+                `
+            },
+            2: {
+                titulo: "Configurar HttpClient",
+                objetivo: "Registrar HttpClient en el contenedor de servicios de Blazor para poder hacer peticiones HTTP a APIs externas.",
+                codigo: `// Agregar ANTES de: var app = builder.Build();
+builder.Services.AddHttpClient();`,
+                archivo: "Program.cs",
+                contenido: `
+                    <div class="info-box explanation">
+                        <h4>📍 Ubicación exacta</h4>
+                        <p>Abre el archivo <code>Program.cs</code> en la raíz del proyecto. Busca la línea que dice <code>var app = builder.Build();</code> y agrega el código justo ANTES de esa línea.</p>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Tu archivo <code>Program.cs</code> debe incluir la línea <code>builder.Services.AddHttpClient();</code> antes de crear la aplicación. No hay errores de compilación.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué hace esto?</h4>
+                        <p><code>AddHttpClient()</code> registra el servicio HttpClient en el contenedor de inyección de dependencias. Esto permite que cualquier componente Blazor pueda solicitar una instancia de HttpClient para hacer peticiones HTTP a APIs.</p>
+                    </div>
+                `
+            },
+            3: {
+                titulo: "Crear Modelo de Datos (Clima)",
+                objetivo: "Crear clases C# que representen la estructura de datos JSON que devuelve la API del clima.",
+                codigo: `namespace WeatherBlazor.Models
+{
+    public class WeatherData
+    {
+        public string Name { get; set; } = "";
+        public MainData Main { get; set; } = new();
+        public WeatherDescription[] Weather { get; set; } = Array.Empty<WeatherDescription>();
+    }
+
+    public class MainData
+    {
+        public decimal Temp { get; set; }
+        public decimal Feels_Like { get; set; }
+        public int Humidity { get; set; }
+    }
+
+    public class WeatherDescription
+    {
+        public string Description { get; set; } = "";
+        public string Icon { get; set; } = "";
+    }
+}`,
+                archivo: "Models/WeatherData.cs",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Crear nueva carpeta y archivo</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Pasos</h4>
+                            <ul>
+                                <li>En el Solution Explorer, click derecho en el proyecto</li>
+                                <li>Add → New Folder → nombrarla <code>Models</code></li>
+                                <li>Click derecho en la carpeta Models</li>
+                                <li>Add → Class → nombrarla <code>WeatherData.cs</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Debes tener el archivo <code>WeatherData.cs</code> dentro de la carpeta <code>Models</code> con las tres clases definidas. El proyecto compila sin errores.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Por qué estas clases?</h4>
+                        <p>Estas clases mapean exactamente la estructura JSON que devuelve la API de OpenWeather. Cuando deserializamos el JSON, C# automáticamente convierte los datos JSON en objetos de estas clases.</p>
+                    </div>
+                `
+            },
+            4: {
+                titulo: "Crear Componente Weather",
+                objetivo: "Crear una página Blazor que mostrará los datos del clima.",
+                codigo: `@page "/weather"
+
+<PageTitle>Clima</PageTitle>
+
+<h3>🌤️ Clima en Tiempo Real</h3>
+
+<p>Aquí mostraremos el clima...</p>
+
+@code {
+    // El código irá aquí
+}`,
+                archivo: "Pages/Weather.razor",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Crear nuevo archivo</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Pasos</h4>
+                            <ul>
+                                <li>En el Solution Explorer, click derecho en la carpeta <code>Pages</code></li>
+                                <li>Add → Razor Component</li>
+                                <li>Nombre: <code>Weather.razor</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Ejecuta la app (F5) y navega a <code>/weather</code> en el navegador. Debes ver el título "Clima en Tiempo Real". La URL será algo como: <code>https://localhost:7XXX/weather</code></p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué acabas de hacer?</h4>
+                        <p><code>@page "/weather"</code> define la ruta para acceder a este componente. Es una página de tu aplicación Blazor lista para agregar funcionalidad.</p>
+                    </div>
+                `
+            },
+            5: {
+                titulo: "Inyectar HttpClient",
+                objetivo: "Inyectar HttpClient en el componente Weather para poder hacer peticiones HTTP.",
+                codigo: `@page "/weather"
+@inject HttpClient Http
+@using WeatherBlazor.Models
+
+<PageTitle>Clima</PageTitle>
+
+<h3>🌤️ Clima en Tiempo Real</h3>
+
+<p>Aquí mostraremos el clima...</p>
+
+@code {
+    
+}`,
+                archivo: "Pages/Weather.razor",
+                contenido: `
+                    <div class="info-box explanation">
+                        <h4>📍 Qué agregamos</h4>
+                        <p>Línea 2: <code>@inject HttpClient Http</code> - Inyecta el servicio HttpClient<br>
+                        Línea 3: <code>@using WeatherBlazor.Models</code> - Importa los modelos que creamos</p>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>El proyecto compila sin errores. No hay cambios visibles todavía, pero ahora el componente tiene acceso a HttpClient y a los modelos.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué es @inject?</h4>
+                        <p>Es la forma de Blazor para pedir servicios registrados. Le decimos a Blazor: "Dame una instancia de HttpClient y guárdala en la variable Http".</p>
+                    </div>
+                `
+            },
+            6: {
+                titulo: "Hacer GET Request",
+                objetivo: "Hacer una petición HTTP GET a la API de OpenWeather para obtener datos del clima.",
+                codigo: `@code {
+    private WeatherData? clima;
+    private string apiKey = "bd5e378503939ddaee76f12ad7a97608"; // API key de prueba
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q=London&appid={apiKey}&units=metric";
+            clima = await Http.GetFromJsonAsync<WeatherData>(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+}`,
+                archivo: "Pages/Weather.razor (bloque @code)",
+                contenido: `
+                    <div class="info-box explanation">
+                        <h4>📍 Qué hace este código</h4>
+                        <ul>
+                            <li><code>OnInitializedAsync()</code> - Se ejecuta cuando el componente carga</li>
+                            <li><code>GetFromJsonAsync&lt;WeatherData&gt;</code> - Hace GET y deserializa JSON automáticamente</li>
+                            <li><code>q=London</code> - Consultamos el clima de Londres</li>
+                            <li><code>units=metric</code> - Temperatura en Celsius</li>
+                        </ul>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>El proyecto compila. Aún no ves nada en pantalla, pero la petición se está haciendo. Puedes verificar en la consola del navegador (F12) que no hay errores.</p>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>⚠️ Nota sobre la API Key</h4>
+                        <p>Esta es una API key de prueba pública. En producción, NUNCA pongas API keys directamente en el código. Usa variables de entorno o appsettings.json</p>
+                    </div>
+                `
+            },
+            7: {
+                titulo: "Verificar Deserialización",
+                objetivo: "Confirmar que los datos JSON se están convirtiendo correctamente a objetos C#.",
+                codigo: `protected override async Task OnInitializedAsync()
+{
+    try
+    {
+        string url = $"https://api.openweathermap.org/data/2.5/weather?q=London&appid={apiKey}&units=metric";
+        clima = await Http.GetFromJsonAsync<WeatherData>(url);
+        
+        // AGREGAR ESTA LÍNEA:
+        Console.WriteLine($"Clima obtenido: {clima?.Name}, Temp: {clima?.Main.Temp}°C");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+}`,
+                archivo: "Pages/Weather.razor (en OnInitializedAsync)",
+                contenido: `
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué es deserialización?</h4>
+                        <p>Es el proceso de convertir datos JSON (texto) a objetos C#. Por ejemplo:</p>
+                        <p><strong>JSON de la API:</strong><br>
+                        <code>{ "name": "London", "main": { "temp": 15.5 } }</code></p>
+                        <p><strong>Se convierte en:</strong><br>
+                        <code>clima.Name = "London"</code><br>
+                        <code>clima.Main.Temp = 15.5</code></p>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Ejecuta la app (F5), navega a /weather, abre la consola del navegador (F12) y debes ver:<br>
+                        <code>Clima obtenido: London, Temp: XX.X°C</code></p>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>⚠️ Si no ves nada en consola</h4>
+                        <p>Revisa que:<br>
+                        - Tienes internet<br>
+                        - La API key es correcta<br>
+                        - No hay errores en consola</p>
+                    </div>
+                `
+            },
+            8: {
+                titulo: "Mostrar Datos en la UI",
+                objetivo: "Mostrar los datos del clima en la interfaz de usuario de forma visual.",
+                codigo: `@page "/weather"
+@inject HttpClient Http
+@using WeatherBlazor.Models
+
+<PageTitle>Clima</PageTitle>
+
+<h3>🌤️ Clima en Tiempo Real</h3>
+
+@if (clima == null)
+{
+    <p><em>Cargando datos del clima...</em></p>
+}
+else
+{
+    <div class="clima-card">
+        <h4>📍 @clima.Name</h4>
+        <p><strong>Temperatura:</strong> @clima.Main.Temp°C</p>
+        <p><strong>Sensación térmica:</strong> @clima.Main.Feels_Like°C</p>
+        <p><strong>Humedad:</strong> @clima.Main.Humidity%</p>
+        <p><strong>Descripción:</strong> @clima.Weather[0].Description</p>
+    </div>
+}
+
+<style>
+    .clima-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        border-radius: 15px;
+        max-width: 400px;
+        margin-top: 20px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .clima-card h4 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+    .clima-card p {
+        font-size: 1.2em;
+        margin: 10px 0;
+    }
+</style>
+
+@code {
+    private WeatherData? clima;
+    private string apiKey = "bd5e378503939ddaee76f12ad7a97608";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            string url = $"https://api.openweathermap.org/data/2.5/weather?q=London&appid={apiKey}&units=metric";
+            clima = await Http.GetFromJsonAsync<WeatherData>(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+}`,
+                archivo: "Pages/Weather.razor (COMPLETO)",
+                contenido: `
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint - ¡FUNCIONA!</h4>
+                        <p>Ejecuta la app (F5) y navega a /weather. Debes ver una tarjeta morada con:<br>
+                        - Nombre de la ciudad (London)<br>
+                        - Temperatura actual<br>
+                        - Sensación térmica<br>
+                        - Humedad<br>
+                        - Descripción del clima</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué aprendiste?</h4>
+                        <ul>
+                            <li><code>@if (clima == null)</code> - Renderizado condicional</li>
+                            <li><code>@clima.Name</code> - Interpolación de variables</li>
+                            <li><code>clima.Weather[0]</code> - Acceso a arrays</li>
+                            <li>HttpClient + GetFromJsonAsync = Consumir APIs fácilmente</li>
+                        </ul>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>🎉 ¡PARTE A COMPLETADA!</h4>
+                        <p>Acabas de consumir una API REST pública desde Blazor. Ahora tienes los fundamentos para crear tus propias integraciones con APIs.</p>
+                    </div>
+                `
+            },
+            9: {
+                titulo: "Crear Proyecto Web API",
+                objetivo: "Crear tu propia API REST usando ASP.NET Core Web API que después consumirás desde Blazor.",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Pasos en Visual Studio</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Instrucciones</h4>
+                            <ul>
+                                <li>En Visual Studio, File → Add → New Project</li>
+                                <li>Busca y selecciona <strong>"ASP.NET Core Web API"</strong></li>
+                                <li>Nombre: <code>ProductosAPI</code></li>
+                                <li>Framework: <strong>.NET 8.0</strong></li>
+                                <li>✅ Marcar: <strong>"Use controllers"</strong></li>
+                                <li>✅ Marcar: <strong>"Enable OpenAPI support"</strong> (Swagger)</li>
+                                <li>Click <strong>"Create"</strong></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Ahora tienes DOS proyectos en tu solution:<br>
+                        1. WeatherBlazor (el que ya tenías)<br>
+                        2. ProductosAPI (el nuevo)</p>
+                        <p>Click derecho en ProductosAPI → Set as Startup Project. Ejecuta (F5) y debes ver Swagger con endpoints de ejemplo.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué es una Web API?</h4>
+                        <p>Es un proyecto backend que expone endpoints HTTP. Otros programas (como tu app Blazor) pueden hacer peticiones a estos endpoints para obtener o enviar datos.</p>
+                    </div>
+                `
+            },
+            10: {
+                titulo: "Crear Modelo Producto",
+                objetivo: "Definir la estructura de datos que manejará tu API (productos con Id, Nombre, Precio, Stock).",
+                codigo: `namespace ProductosAPI.Models
+{
+    public class Producto
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = "";
+        public decimal Precio { get; set; }
+        public int Stock { get; set; }
+        public string? Descripcion { get; set; }
+    }
+}`,
+                archivo: "Models/Producto.cs",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Crear carpeta y archivo</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Pasos</h4>
+                            <ul>
+                                <li>En ProductosAPI, click derecho en el proyecto</li>
+                                <li>Add → New Folder → nombrarla <code>Models</code></li>
+                                <li>Click derecho en Models → Add → Class</li>
+                                <li>Nombre: <code>Producto.cs</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>El archivo <code>Producto.cs</code> está en la carpeta Models. El proyecto compila sin errores.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Por qué este modelo?</h4>
+                        <p>Define qué datos tiene un producto. Es como una plantilla. Todos los productos tendrán estas 5 propiedades. La API devolverá objetos JSON basados en esta estructura.</p>
+                    </div>
+                `
+            },
+            11: {
+                titulo: "Lista en Memoria (Datos de Prueba)",
+                objetivo: "Crear una lista en memoria con productos de prueba que usará tu API.",
+                codigo: `using ProductosAPI.Models;
+
+namespace ProductosAPI.Data
+{
+    public static class ProductosData
+    {
+        private static List<Producto> productos = new List<Producto>
+        {
+            new Producto { Id = 1, Nombre = "Laptop", Precio = 15000, Stock = 5, Descripcion = "Laptop gaming" },
+            new Producto { Id = 2, Nombre = "Mouse", Precio = 350, Stock = 20, Descripcion = "Mouse inalámbrico" },
+            new Producto { Id = 3, Nombre = "Teclado", Precio = 800, Stock = 15, Descripcion = "Teclado mecánico" }
+        };
+
+        public static List<Producto> ObtenerTodos() => productos;
+        
+        public static Producto? ObtenerPorId(int id) => productos.FirstOrDefault(p => p.Id == id);
+        
+        public static Producto Agregar(Producto producto)
+        {
+            producto.Id = productos.Any() ? productos.Max(p => p.Id) + 1 : 1;
+            productos.Add(producto);
+            return producto;
+        }
+        
+        public static bool Eliminar(int id)
+        {
+            var producto = productos.FirstOrDefault(p => p.Id == id);
+            if (producto != null)
+            {
+                productos.Remove(producto);
+                return true;
+            }
+            return false;
+        }
+    }
+}`,
+                archivo: "Data/ProductosData.cs",
+                contenido: `
+                    <div class="info-box explanation">
+                        <h4>📝 Crear carpeta Data primero</h4>
+                        <p>Click derecho en ProductosAPI → Add → New Folder → "Data"</p>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Archivo creado en Data/ProductosData.cs. El proyecto compila sin errores.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Por qué en memoria?</h4>
+                        <p>Para este tutorial, usar memoria es más simple. En producción usarías Entity Framework + SQL Server. Esta lista se reinicia cada vez que detienes la API.</p>
+                    </div>
+                `
+            },
+            12: {
+                titulo: "Crear ProductosController",
+                objetivo: "Crear el controlador que expondrá los endpoints de tu API REST.",
+                codigo: `using Microsoft.AspNetCore.Mvc;
+using ProductosAPI.Models;
+using ProductosAPI.Data;
+
+namespace ProductosAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductosController : ControllerBase
+    {
+        // Los endpoints irán aquí
+    }
+}`,
+                archivo: "Controllers/ProductosController.cs",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Crear controlador</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Pasos</h4>
+                            <ul>
+                                <li>Click derecho en carpeta <code>Controllers</code></li>
+                                <li>Add → Controller → API Controller - Empty</li>
+                                <li>Nombre: <code>ProductosController</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>El archivo ProductosController.cs está creado. El proyecto compila sin errores.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué es un Controller?</h4>
+                        <p><code>[Route("api/[controller]")]</code> significa que todos los endpoints estarán en <code>/api/productos</code>. Es el cerebro de tu API que maneja las peticiones HTTP.</p>
+                    </div>
+                `
+            },
+            13: {
+                titulo: "GET: Listar Productos",
+                objetivo: "Implementar el endpoint GET para obtener todos los productos.",
+                codigo: `using Microsoft.AspNetCore.Mvc;
+using ProductosAPI.Models;
+using ProductosAPI.Data;
+
+namespace ProductosAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ProductosController : ControllerBase
+    {
+        // GET: api/productos
+        [HttpGet]
+        public ActionResult<List<Producto>> Get()
+        {
+            var productos = ProductosData.ObtenerTodos();
+            return Ok(productos);
+        }
+        
+        // GET: api/productos/5
+        [HttpGet("{id}")]
+        public ActionResult<Producto> Get(int id)
+        {
+            var producto = ProductosData.ObtenerPorId(id);
+            if (producto == null)
+                return NotFound();
+            
+            return Ok(producto);
+        }
+    }
+}`,
+                archivo: "Controllers/ProductosController.cs",
+                contenido: `
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>El proyecto compila. Ya tienes 2 endpoints GET funcionando (listar todos y obtener por ID).</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 Verbos HTTP</h4>
+                        <p><code>[HttpGet]</code> - Obtener datos<br>
+                        <code>ActionResult&lt;T&gt;</code> - Puede devolver el objeto o un código de error<br>
+                        <code>Ok()</code> - Retorna código 200 con los datos</p>
+                    </div>
+                `
+            },
+            14: {
+                titulo: "Probar en Swagger",
+                objetivo: "Probar que tu API funciona correctamente usando la interfaz de Swagger.",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Ejecutar la API</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Pasos</h4>
+                            <ul>
+                                <li>Asegúrate que ProductosAPI es el Startup Project</li>
+                                <li>Presiona <strong>F5</strong> para ejecutar</li>
+                                <li>Se abrirá Swagger en tu navegador</li>
+                                <li>Busca <strong>GET /api/Productos</strong></li>
+                                <li>Click en "Try it out" → "Execute"</li>
+                                <li>Debes ver los 3 productos en la respuesta JSON</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint - ¡Tu API funciona!</h4>
+                        <p>En Swagger, al ejecutar GET /api/Productos debes ver:<br>
+                        <code>[{"id":1,"nombre":"Laptop",...}, {...}, {...}]</code></p>
+                        <p>También prueba GET /api/Productos/1 para obtener solo la laptop.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué es Swagger?</h4>
+                        <p>Es una herramienta que documenta y permite probar tu API. Genera automáticamente una interfaz donde puedes ver todos los endpoints y probarlos sin escribir código.</p>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>⚠️ Anota la URL</h4>
+                        <p>Fíjate en la URL de tu API, será algo como: <code>https://localhost:7XXX</code><br>
+                        La necesitarás en pasos siguientes para conectar Blazor.</p>
+                    </div>
+                `
+            },
+            15: {
+                titulo: "Configurar CORS",
+                objetivo: "Permitir que tu aplicación Blazor (que corre en otro puerto) pueda hacer peticiones a tu API.",
+                codigo: `// AGREGAR ANTES de builder.Build():
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowBlazor",
+        policy => policy
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
+// ... var app = builder.Build();
+
+// AGREGAR DESPUÉS de app.UseHttpsRedirection():
+app.UseCors("AllowBlazor");`,
+                archivo: "Program.cs (ProductosAPI)",
+                contenido: `
+                    <div class="info-box explanation">
+                        <h4>📍 Ubicación exacta</h4>
+                        <p>Primera parte: ANTES de <code>var app = builder.Build();</code><br>
+                        Segunda parte: DESPUÉS de <code>app.UseHttpsRedirection();</code></p>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>La API compila y ejecuta sin errores. Swagger sigue funcionando normalmente.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué es CORS?</h4>
+                        <p>Cross-Origin Resource Sharing. Por seguridad, los navegadores bloquean peticiones entre diferentes orígenes (puertos). CORS permite que Blazor (puerto 5001) se conecte a tu API (puerto 7001).</p>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>⚠️ Solo para desarrollo</h4>
+                        <p><code>AllowAnyOrigin()</code> es SOLO para desarrollo. En producción debes especificar exactamente qué dominios pueden acceder a tu API.</p>
+                    </div>
+                `
+            },
+            16: {
+                titulo: "Conectar Blazor a Tu API",
+                objetivo: "Consumir TU propia API desde Blazor para listar productos.",
+                codigo: `@page "/productos"
+@inject HttpClient Http
+
+<PageTitle>Productos</PageTitle>
+
+<h3>📦 Lista de Productos</h3>
+
+@if (productos == null)
+{
+    <p><em>Cargando productos...</em></p>
+}
+else if (!productos.Any())
+{
+    <p>No hay productos.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in productos)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.Nombre</td>
+                    <td>$@p.Precio</td>
+                    <td>@p.Stock</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Producto>? productos;
+    private string apiUrl = "https://localhost:7001/api/productos"; // CAMBIA EL PUERTO
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            productos = await Http.GetFromJsonAsync<List<Producto>>(apiUrl);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+    }
+
+    public class Producto
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = "";
+        public decimal Precio { get; set; }
+        public int Stock { get; set; }
+    }
+}`,
+                archivo: "Pages/Productos.razor (WeatherBlazor)",
+                contenido: `
+                    <div class="code-section">
+                        <h3>💻 Crear página Productos en Blazor</h3>
+                        <div class="info-box explanation">
+                            <h4>📝 Pasos</h4>
+                            <ul>
+                                <li>En proyecto <strong>WeatherBlazor</strong></li>
+                                <li>Carpeta Pages → Add → Razor Component</li>
+                                <li>Nombre: <code>Productos.razor</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>⚠️ IMPORTANTE: Cambiar el puerto</h4>
+                        <p>En <code>apiUrl</code>, cambia <code>7001</code> por el puerto de TU API (el que viste en Swagger). Probablemente será 7XXX.</p>
+                    </div>
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint - ¡Funciona!</h4>
+                        <p>1. Ejecuta PRIMERO la API (ProductosAPI, F5)<br>
+                        2. SIN DETENER la API, ejecuta Blazor (WeatherBlazor, F5)<br>
+                        3. Navega a /productos<br>
+                        4. Debes ver la tabla con Laptop, Mouse, Teclado</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Por qué necesitas ejecutar ambos?</h4>
+                        <p>Blazor (frontend) hace peticiones a la API (backend). Ambos deben estar corriendo simultáneamente. Es como tener 2 programas comunicándose.</p>
+                    </div>
+                `
+            },
+            17: {
+                titulo: "POST: Crear Producto",
+                objetivo: "Implementar el endpoint POST en la API para agregar nuevos productos.",
+                codigo: `// AGREGAR este método al ProductosController:
+
+// POST: api/productos
+[HttpPost]
+public ActionResult<Producto> Post([FromBody] Producto producto)
+{
+    if (string.IsNullOrEmpty(producto.Nombre))
+        return BadRequest("El nombre es requerido");
+    
+    if (producto.Precio <= 0)
+        return BadRequest("El precio debe ser mayor a 0");
+    
+    var nuevoProducto = ProductosData.Agregar(producto);
+    return CreatedAtAction(nameof(Get), new { id = nuevoProducto.Id }, nuevoProducto);
+}`,
+                archivo: "Controllers/ProductosController.cs (ProductosAPI)",
+                contenido: `
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint</h4>
+                        <p>Ejecuta la API, ve a Swagger, busca POST /api/Productos. Prueba crear un producto:<br>
+                        <code>{"nombre":"Monitor","precio":3500,"stock":10}</code><br>
+                        Debe retornar el producto con un nuevo ID.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 Verbo POST</h4>
+                        <p><code>[HttpPost]</code> - Para CREAR recursos<br>
+                        <code>[FromBody]</code> - Los datos vienen en el cuerpo de la petición (JSON)<br>
+                        <code>CreatedAtAction</code> - Retorna código 201 (Created) con el objeto creado</p>
+                    </div>
+                `
+            },
+            18: {
+                titulo: "Consumir POST desde Blazor",
+                objetivo: "Agregar un formulario en Blazor para crear nuevos productos usando el endpoint POST.",
+                codigo: `// AGREGAR ANTES de la tabla:
+
+<div class="mb-4">
+    <h4>➕ Agregar Producto</h4>
+    <div class="row">
+        <div class="col-md-3">
+            <input @bind="nuevoNombre" class="form-control" placeholder="Nombre" />
+        </div>
+        <div class="col-md-2">
+            <input @bind="nuevoPrecio" type="number" class="form-control" placeholder="Precio" />
+        </div>
+        <div class="col-md-2">
+            <input @bind="nuevoStock" type="number" class="form-control" placeholder="Stock" />
+        </div>
+        <div class="col-md-2">
+            <button @onclick="AgregarProducto" class="btn btn-primary">Agregar</button>
+        </div>
+    </div>
+</div>
+
+// AGREGAR EN @code:
+private string nuevoNombre = "";
+private decimal nuevoPrecio = 0;
+private int nuevoStock = 0;
+
+private async Task AgregarProducto()
+{
+    try
+    {
+        var producto = new Producto
+        {
+            Nombre = nuevoNombre,
+            Precio = nuevoPrecio,
+            Stock = nuevoStock
+        };
+
+        var response = await Http.PostAsJsonAsync(apiUrl, producto);
+        
+        if (response.IsSuccessStatusCode)
+        {
+            // Limpiar formulario
+            nuevoNombre = "";
+            nuevoPrecio = 0;
+            nuevoStock = 0;
+            
+            // Recargar lista
+            productos = await Http.GetFromJsonAsync<List<Producto>>(apiUrl);
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+}`,
+                archivo: "Pages/Productos.razor - AGREGAR formulario",
+                contenido: `
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint - ¡Funciona!</h4>
+                        <p>1. Ejecuta API y Blazor<br>
+                        2. Ve a /productos<br>
+                        3. Escribe nombre, precio, stock<br>
+                        4. Click "Agregar"<br>
+                        5. El nuevo producto aparece en la tabla inmediatamente</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 PostAsJsonAsync</h4>
+                        <p>Convierte el objeto C# a JSON y lo envía con una petición POST. La API lo recibe, lo deserializa, y lo agrega a la lista.</p>
+                    </div>
+                `
+            },
+            19: {
+                titulo: "DELETE: Eliminar Producto",
+                objetivo: "Implementar eliminación de productos tanto en la API como en Blazor.",
+                codigo: `// PASO 1: Endpoint DELETE en API
+// Controllers/ProductosController.cs
+
+// DELETE: api/productos/5
+[HttpDelete("{id}")]
+public ActionResult Delete(int id)
+{
+    var eliminado = ProductosData.Eliminar(id);
+    
+    if (!eliminado)
+        return NotFound();
+    
+    return NoContent();
+}
+
+// PASO 2: Botón eliminar en Blazor
+// Pages/Productos.razor - Modificar tabla
+
+<thead>
+    <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
+<tbody>
+    @foreach (var p in productos)
+    {
+        <tr>
+            <td>@p.Id</td>
+            <td>@p.Nombre</td>
+            <td>$@p.Precio</td>
+            <td>@p.Stock</td>
+            <td>
+                <button @onclick="() => EliminarProducto(p.Id)" 
+                        class="btn btn-danger btn-sm">🗑️</button>
+            </td>
+        </tr>
+    }
+</tbody>
+
+// AGREGAR en @code:
+private async Task EliminarProducto(int id)
+{
+    try
+    {
+        var response = await Http.DeleteAsync($"{apiUrl}/{id}");
+        
+        if (response.IsSuccessStatusCode)
+        {
+            // Recargar lista
+            productos = await Http.GetFromJsonAsync<List<Producto>>(apiUrl);
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
+}`,
+                archivo: "ProductosController.cs y Productos.razor",
+                contenido: `
+                    <div class="info-box checkpoint">
+                        <h4>✅ Checkpoint - CRUD casi completo!</h4>
+                        <p>Ahora puedes:<br>
+                        ✅ Listar productos (GET)<br>
+                        ✅ Crear productos (POST)<br>
+                        ✅ Eliminar productos (DELETE)</p>
+                        <p>Click en el botón 🗑️ elimina el producto de inmediato.</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 Verbo DELETE</h4>
+                        <p><code>DeleteAsync</code> envía una petición DELETE con el ID en la URL. La API busca ese producto y lo elimina de la lista.</p>
+                    </div>
+                `
+            },
+            20: {
+                titulo: "Loading States y Pulido Final",
+                objetivo: "Mejorar la experiencia de usuario agregando indicadores de carga y mensajes de éxito/error.",
+                codigo: `@page "/productos"
+@inject HttpClient Http
+
+<PageTitle>Productos</PageTitle>
+
+<h3>📦 Gestión de Productos</h3>
+
+@if (!string.IsNullOrEmpty(mensaje))
+{
+    <div class="alert alert-success">@mensaje</div>
+}
+
+@if (!string.IsNullOrEmpty(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="mb-4">
+    <h4>➕ Agregar Producto</h4>
+    <div class="row">
+        <div class="col-md-3">
+            <input @bind="nuevoNombre" class="form-control" placeholder="Nombre" />
+        </div>
+        <div class="col-md-2">
+            <input @bind="nuevoPrecio" type="number" class="form-control" placeholder="Precio" />
+        </div>
+        <div class="col-md-2">
+            <input @bind="nuevoStock" type="number" class="form-control" placeholder="Stock" />
+        </div>
+        <div class="col-md-2">
+            <button @onclick="AgregarProducto" class="btn btn-primary" disabled="@cargando">
+                @if (cargando) { <span>⏳ Guardando...</span> } else { <span>Agregar</span> }
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (productos == null)
+{
+    <div class="text-center">
+        <div class="spinner-border" role="status"></div>
+        <p>Cargando productos...</p>
+    </div>
+}
+else if (!productos.Any())
+{
+    <p>No hay productos. Agrega uno arriba.</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var p in productos)
+            {
+                <tr>
+                    <td>@p.Id</td>
+                    <td>@p.Nombre</td>
+                    <td>$@p.Precio.ToString("N2")</td>
+                    <td>@p.Stock unidades</td>
+                    <td>
+                        <button @onclick="() => EliminarProducto(p.Id)" 
+                                class="btn btn-danger btn-sm" 
+                                disabled="@cargando">🗑️ Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <p><strong>Total productos:</strong> @productos.Count</p>
+}
+
+@code {
+    private List<Producto>? productos;
+    private string apiUrl = "https://localhost:7001/api/productos";
+    
+    private string nuevoNombre = "";
+    private decimal nuevoPrecio = 0;
+    private int nuevoStock = 0;
+    
+    private bool cargando = false;
+    private string mensaje = "";
+    private string error = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CargarProductos();
+    }
+
+    private async Task CargarProductos()
+    {
+        try
+        {
+            productos = await Http.GetFromJsonAsync<List<Producto>>(apiUrl);
+        }
+        catch (Exception ex)
+        {
+            error = $"Error al cargar productos: {ex.Message}";
+        }
+    }
+
+    private async Task AgregarProducto()
+    {
+        if (string.IsNullOrWhiteSpace(nuevoNombre))
+        {
+            error = "El nombre es requerido";
+            return;
+        }
+
+        cargando = true;
+        error = "";
+        mensaje = "";
+        
+        try
+        {
+            var producto = new Producto
+            {
+                Nombre = nuevoNombre,
+                Precio = nuevoPrecio,
+                Stock = nuevoStock
+            };
+
+            var response = await Http.PostAsJsonAsync(apiUrl, producto);
+            
+            if (response.IsSuccessStatusCode)
+            {
+                mensaje = "✅ Producto agregado exitosamente";
+                nuevoNombre = "";
+                nuevoPrecio = 0;
+                nuevoStock = 0;
+                await CargarProductos();
+            }
+            else
+            {
+                error = "Error al agregar producto";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+    private async Task EliminarProducto(int id)
+    {
+        cargando = true;
+        error = "";
+        mensaje = "";
+        
+        try
+        {
+            var response = await Http.DeleteAsync($"{apiUrl}/{id}");
+            
+            if (response.IsSuccessStatusCode)
+            {
+                mensaje = "✅ Producto eliminado";
+                await CargarProductos();
+            }
+        }
+        catch (Exception ex)
+        {
+            error = $"Error: {ex.Message}";
+        }
+        finally
+        {
+            cargando = false;
+        }
+    }
+
+    public class Producto
+    {
+        public int Id { get; set; }
+        public string Nombre { get; set; } = "";
+        public decimal Precio { get; set; }
+        public int Stock { get; set; }
+    }
+}`,
+                archivo: "Pages/Productos.razor - Versión FINAL",
+                contenido: `
+                    <div class="info-box checkpoint">
+                        <h4>✅ ¡TUTORIAL COMPLETADO! 🎉</h4>
+                        <p>Ahora tienes:<br>
+                        ✅ Consumo de API pública (clima)<br>
+                        ✅ Tu propia Web API REST<br>
+                        ✅ CRUD completo desde Blazor<br>
+                        ✅ Loading states<br>
+                        ✅ Manejo de errores<br>
+                        ✅ Mensajes de éxito/error<br>
+                        ✅ Arquitectura cliente-servidor funcionando</p>
+                    </div>
+                    <div class="info-box explanation">
+                        <h4>💡 ¿Qué agregamos en este paso?</h4>
+                        <ul>
+                            <li><code>cargando</code> - Variable para deshabilitar botones mientras procesa</li>
+                            <li><code>mensaje/error</code> - Feedback visual para el usuario</li>
+                            <li>Spinner de Bootstrap para loading</li>
+                            <li>Validación de campos</li>
+                            <li>Formato de moneda con ToString("N2")</li>
+                        </ul>
+                    </div>
+                    <div class="info-box warning">
+                        <h4>🎓 Próximos pasos</h4>
+                        <p>Para mejorar este proyecto podrías:<br>
+                        - Agregar edición de productos (PUT)<br>
+                        - Conectar la API a una base de datos real con EF Core<br>
+                        - Agregar autenticación<br>
+                        - Desplegar en Azure<br>
+                        - Agregar validaciones más robustas</p>
+                    </div>
+                `
+            }
+        };
+
+        // Estado y lógica
+        let currentStep = 1;
+        const totalSteps = 20;
+        const completedSteps = new Set(JSON.parse(localStorage.getItem('completedSteps_apis') || '[]'));
+
+        // Función para renderizar paso
+        function renderStep(stepNum) {
+            const paso = pasos[stepNum];
+            if (!paso) return '';
+            
+            let html = `
+                <div class="step-content active" id="step-${stepNum}">
+                    <div class="step-header">
+                        <div class="step-number">PASO ${stepNum} de ${totalSteps}</div>
+                        <h2 class="step-title">${paso.titulo}</h2>
+                    </div>
+                    <div class="step-objective">
+                        <h3>🎯 Objetivo</h3>
+                        <p>${paso.objetivo}</p>
+                    </div>
+            `;
+            
+            if (paso.codigo) {
+                html += `
+                    <div class="code-section">
+                        <h3>💻 Código a agregar</h3>
+                        <div class="code-header">
+                            <span>📁 ${paso.archivo}</span>
+                            <button class="copy-btn" onclick="copyCode(this, 'code-step${stepNum}')">📋 Copiar</button>
+                        </div>
+                        <pre><code id="code-step${stepNum}" class="language-csharp">${paso.codigo.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+                    </div>
+                `;
+            }
+            
+            html += paso.contenido;
+            html += `
+                    <button class="complete-btn" onclick="markStepComplete(${stepNum})">✓ Marcar como completado y continuar</button>
+                    <div class="navigation-buttons">
+                        <button class="nav-btn prev" onclick="goToStep(${stepNum - 1})" ${stepNum === 1 ? 'disabled' : ''}>← Anterior</button>
+                        <button class="nav-btn next" onclick="goToStep(${stepNum + 1})" ${stepNum === totalSteps ? 'disabled' : ''}>Siguiente →</button>
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            // Renderizar paso 1
+            document.getElementById('main-content').innerHTML = renderStep(1);
+            Prism.highlightAll();
+            
+            updateProgress();
+            restoreCompletedSteps();
+            
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const step = parseInt(item.dataset.step);
+                    goToStep(step);
+                });
+            });
+        });
+
+        function goToStep(step) {
+            if (step < 1 || step > totalSteps) return;
+            
+            document.querySelector('.nav-item.active')?.classList.remove('active');
+            currentStep = step;
+            
+            document.getElementById('main-content').innerHTML = renderStep(currentStep);
+            document.querySelector(`.nav-item[data-step="${currentStep}"]`)?.classList.add('active');
+            document.querySelector('.main-content').scrollTop = 0;
+            
+            updateProgress();
+            Prism.highlightAll();
+        }
+
+        function markStepComplete(step) {
+            completedSteps.add(step);
+            localStorage.setItem('completedSteps_apis', JSON.stringify([...completedSteps]));
+            const navItem = document.querySelector(`.nav-item[data-step="${step}"]`);
+            if (navItem) navItem.classList.add('completed');
+            updateProgress();
+            if (step < totalSteps) goToStep(step + 1);
+        }
+
+        function updateProgress() {
+            const percent = Math.round((completedSteps.size / totalSteps) * 100);
+            document.getElementById('progress-fill').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = `Paso ${currentStep} de ${totalSteps}`;
+            document.getElementById('progress-percent').textContent = percent + '%';
+        }
+
+        function restoreCompletedSteps() {
+            completedSteps.forEach(step => {
+                const navItem = document.querySelector(`.nav-item[data-step="${step}"]`);
+                if (navItem) navItem.classList.add('completed');
+            });
+        }
+
+        function copyCode(button, codeId) {
+            const code = document.getElementById(codeId).textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = '✓ Copiado';
+                button.classList.add('copied');
+                setTimeout(() => {
+                    button.textContent = '📋 Copiar';
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
