@@ -232,18 +232,19 @@
                 </div>
                 <div class="nav-section">
                     <div class="nav-section-title">Parte B: Tu Propia API</div>
-                    <div class="nav-item" data-step="9"><div class="step-icon">9</div><span>Crear proyecto Web API</span></div>
-                    <div class="nav-item" data-step="10"><div class="step-icon">10</div><span>Crear modelo Producto</span></div>
-                    <div class="nav-item" data-step="11"><div class="step-icon">11</div><span>Lista en memoria</span></div>
-                    <div class="nav-item" data-step="12"><div class="step-icon">12</div><span>Crear ProductosController</span></div>
-                    <div class="nav-item" data-step="13"><div class="step-icon">13</div><span>GET: Listar productos</span></div>
-                    <div class="nav-item" data-step="14"><div class="step-icon">14</div><span>Probar en Swagger</span></div>
-                    <div class="nav-item" data-step="15"><div class="step-icon">15</div><span>Configurar CORS</span></div>
-                    <div class="nav-item" data-step="16"><div class="step-icon">16</div><span>Conectar Blazor a API</span></div>
-                    <div class="nav-item" data-step="17"><div class="step-icon">17</div><span>POST: Crear producto</span></div>
-                    <div class="nav-item" data-step="18"><div class="step-icon">18</div><span>Consumir POST desde Blazor</span></div>
-                    <div class="nav-item" data-step="19"><div class="step-icon">19</div><span>DELETE: Eliminar producto</span></div>
-                    <div class="nav-item" data-step="20"><div class="step-icon">20</div><span>Loading states</span></div>
+                    <div class="nav-item" data-step="9"><div class="step-icon">9</div><span>Instalar Swagger (.NET 10)</span></div>
+					<div class="nav-item" data-step="10"><div class="step-icon">10</div><span>Crear proyecto Web API</span></div>
+					<div class="nav-item" data-step="11"><div class="step-icon">11</div><span>Crear modelo Producto</span></div>
+                    <div class="nav-item" data-step="12"><div class="step-icon">12</div><span>Lista en memoria</span></div>
+                    <div class="nav-item" data-step="13"><div class="step-icon">13</div><span>Crear ProductosController</span></div>
+                    <div class="nav-item" data-step="14"><div class="step-icon">14</div><span>GET: Listar productos</span></div>
+                    <div class="nav-item" data-step="15"><div class="step-icon">15</div><span>Probar en Swagger</span></div>
+                    <div class="nav-item" data-step="16"><div class="step-icon">16</div><span>Configurar CORS</span></div>
+                    <div class="nav-item" data-step="17"><div class="step-icon">17</div><span>Conectar Blazor a API</span></div>
+                    <div class="nav-item" data-step="18"><div class="step-icon">18</div><span>POST: Crear producto</span></div>
+                    <div class="nav-item" data-step="19"><div class="step-icon">19</div><span>Consumir POST desde Blazor</span></div>
+                    <div class="nav-item" data-step="20"><div class="step-icon">20</div><span>DELETE: Eliminar producto</span></div>
+                    <div class="nav-item" data-step="21"><div class="step-icon">21</div><span>Loading states</span></div>
                 </div>
             </nav>
         </div>
@@ -598,7 +599,7 @@ else
                     </div>
                 `
             },
-            9: {
+            10: {
                 titulo: "Crear Proyecto Web API",
                 objetivo: "Crear tu propia API REST usando ASP.NET Core Web API que después consumirás desde Blazor.",
                 contenido: `
@@ -630,7 +631,13 @@ else
                     </div>
                 `
             },
-            10: {
+			9: { 
+			titulo: "Instalar Swagger (SOLO .NET 10/9)",
+                objetivo: "Instalar Swashbuckle.AspNetCore para .NET 10.",
+                contenido: `<div class="info-box warning"><h4>⚠️ ¿Necesitas este paso?</h4><p><strong>SI tienes .NET 8:</strong> SALTA este paso</p><p><strong>SI tienes .NET 10 o .NET 9:</strong> Complétalo</p></div><div class="code-section"><h3>💻 OPCIÓN 1: Interfaz Visual</h3><div class="info-box explanation"><h4>📝 Pasos</h4><ul><li>Click derecho en <strong>ProductosAPI</strong></li><li><strong>"Administrar paquetes NuGet..."</strong></li><li>Pestaña <strong>"Examinar"</strong></li><li>Busca: <code>Swashbuckle.AspNetCore</code></li><li>Click primer resultado</li><li><strong>"Instalar"</strong></li><li>Acepta licencia</li><li>Espera a que termine</li></ul></div></div><div class="code-section"><h3>💻 OPCIÓN 2: Consola</h3><div class="info-box explanation"><p>Tools → NuGet Package Manager → Package Manager Console</p></div><div class="code-header"><span>📁 Package Manager Console</span><button class="copy-btn" onclick="copyCode(this, 'code-step9b')">📋 Copiar</button></div><pre><code id="code-step9b" class="language-powershell">Install-Package Swashbuckle.AspNetCore</code></pre></div><div class="info-box checkpoint"><h4>✅ Checkpoint</h4><p>En Solution Explorer: ProductosAPI → Dependencies → Packages<br>Debes ver <strong>Swashbuckle.AspNetCore</strong></p></div><div class="info-box explanation"><h4>💡 ¿Por qué?</h4><p>.NET 10 NO incluye Swagger. Necesitamos la interfaz visual para el tutorial.</p></div>`
+           
+			},
+            11: {
                 titulo: "Crear Modelo Producto",
                 objetivo: "Definir la estructura de datos que manejará tu API (productos con Id, Nombre, Precio, Stock).",
                 codigo: `namespace ProductosAPI.Models
@@ -668,7 +675,7 @@ else
                     </div>
                 `
             },
-            11: {
+            12: {
                 titulo: "Lista en Memoria (Datos de Prueba)",
                 objetivo: "Crear una lista en memoria con productos de prueba que usará tu API.",
                 codigo: `using ProductosAPI.Models;
@@ -723,7 +730,7 @@ namespace ProductosAPI.Data
                     </div>
                 `
             },
-            12: {
+            13: {
                 titulo: "Crear ProductosController",
                 objetivo: "Crear el controlador que expondrá los endpoints de tu API REST.",
                 codigo: `using Microsoft.AspNetCore.Mvc;
@@ -762,7 +769,7 @@ namespace ProductosAPI.Controllers
                     </div>
                 `
             },
-            13: {
+            14: {
                 titulo: "GET: Listar Productos",
                 objetivo: "Implementar el endpoint GET para obtener todos los productos.",
                 codigo: `using Microsoft.AspNetCore.Mvc;
@@ -809,7 +816,7 @@ namespace ProductosAPI.Controllers
                     </div>
                 `
             },
-            14: {
+            15: {
                 titulo: "Probar en Swagger",
                 objetivo: "Probar que tu API funciona correctamente usando la interfaz de Swagger.",
                 contenido: `
@@ -844,7 +851,7 @@ namespace ProductosAPI.Controllers
                     </div>
                 `
             },
-            15: {
+            16: {
                 titulo: "Configurar CORS",
                 objetivo: "Permitir que tu aplicación Blazor (que corre en otro puerto) pueda hacer peticiones a tu API.",
                 codigo: `// AGREGAR ANTES de builder.Build():
@@ -882,7 +889,7 @@ app.UseCors("AllowBlazor");`,
                     </div>
                 `
             },
-            16: {
+            17: {
                 titulo: "Conectar Blazor a Tu API",
                 objetivo: "Consumir TU propia API desde Blazor para listar productos.",
                 codigo: `@page "/productos"
@@ -979,7 +986,7 @@ else
                     </div>
                 `
             },
-            17: {
+            18: {
                 titulo: "POST: Crear Producto",
                 objetivo: "Implementar el endpoint POST en la API para agregar nuevos productos.",
                 codigo: `// AGREGAR este método al ProductosController:
@@ -1013,7 +1020,7 @@ public ActionResult<Producto> Post([FromBody] Producto producto)
                     </div>
                 `
             },
-            18: {
+            19: {
                 titulo: "Consumir POST desde Blazor",
                 objetivo: "Agregar un formulario en Blazor para crear nuevos productos usando el endpoint POST.",
                 codigo: `// AGREGAR ANTES de la tabla:
@@ -1086,7 +1093,7 @@ private async Task AgregarProducto()
                     </div>
                 `
             },
-            19: {
+            20: {
                 titulo: "DELETE: Eliminar Producto",
                 objetivo: "Implementar eliminación de productos tanto en la API como en Blazor.",
                 codigo: `// PASO 1: Endpoint DELETE en API
@@ -1166,7 +1173,7 @@ private async Task EliminarProducto(int id)
                     </div>
                 `
             },
-            20: {
+            21: {
                 titulo: "Loading States y Pulido Final",
                 objetivo: "Mejorar la experiencia de usuario agregando indicadores de carga y mensajes de éxito/error.",
                 codigo: `@page "/productos"
@@ -1396,7 +1403,7 @@ else
 
         // Estado y lógica
         let currentStep = 1;
-        const totalSteps = 20;
+        const totalSteps = 21;
         const completedSteps = new Set(JSON.parse(localStorage.getItem('completedSteps_apis') || '[]'));
 
         // Función para renderizar paso
