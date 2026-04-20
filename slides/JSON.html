@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infografía Interactiva — JSON</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg-card: #181b24;
+    --bg-card-alt: #1e222d;
+    --fg: #e8eaf0;
+    --fg-muted: #8b90a0;
+    --accent: #22d68a;
+    --accent-dim: rgba(34,214,138,0.12);
+    --accent-glow: rgba(34,214,138,0.25);
+    --warn: #f59e42;
+    --warn-dim: rgba(245,158,66,0.12);
+    --error: #f45866;
+    --error-dim: rgba(244,88,102,0.12);
+    --key-color: #5eead4;
+    --string-color: #fbbf24;
+    --number-color: #a78bfa;
+    --bool-color: #f472b6;
+    --null-color: #94a3b8;
+    --bracket-color: #6b7280;
+    --border: rgba(255,255,255,0.06);
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.65;
+    overflow-x: hidden;
+  }
+
+  /* === FONDO ANIMADO === */
+  .bg-grid {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(34,214,138,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,214,138,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .bg-glow {
+    position: fixed; z-index: 0; pointer-events: none;
+    width: 600px; height: 600px; border-radius: 50%;
+    filter: blur(160px); opacity: 0.35;
+  }
+  .bg-glow-1 { top: -200px; left: -100px; background: var(--accent); }
+  .bg-glow-2 { bottom: -300px; right: -150px; background: #6366f1; opacity: 0.2; }
+
+  /* === CONTENEDOR PRINCIPAL === */
+  .infographic {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* === HEADER === */
+  .hero {
+    text-align: center; padding: 50px 0 40px;
+    position: relative;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--accent-dim); color: var(--accent);
+    font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em;
+    padding: 6px 18px; border-radius: 100px;
+    border: 1px solid rgba(34,214,138,0.2);
+    margin-bottom: 20px; text-transform: uppercase;
+  }
+  .hero h1 {
+    font-size: clamp(2.8rem, 6vw, 4.5rem);
+    font-weight: 700; letter-spacing: -0.03em;
+    line-height: 1.1; margin-bottom: 16px;
+  }
+  .hero h1 .accent { color: var(--accent); }
+  .hero-sub {
+    font-size: 1.15rem; color: var(--fg-muted);
+    max-width: 600px; margin: 0 auto;
+    font-weight: 300;
+  }
+
+  /* Animación de llaves decorativas */
+  .hero-braces {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: clamp(5rem, 12vw, 9rem);
+    font-weight: 700; color: var(--accent);
+    opacity: 0.06; position: absolute;
+    top: 50%; transform: translateY(-50%);
+    pointer-events: none; user-select: none;
+  }
+  .hero-braces.left { left: -10px; }
+  .hero-braces.right { right: -10px; }
+
+  /* === SECCIONES === */
+  .section {
+    margin-bottom: 48px;
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .section.visible {
+    opacity: 1; transform: translateY(0);
+  }
+
+  .section-label {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 0.7rem; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--accent); margin-bottom: 10px;
+  }
+  .section-label i { font-size: 0.65rem; }
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700; letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .section-desc {
+    color: var(--fg-muted); font-size: 0.95rem;
+    margin-bottom: 24px; max-width: 700px;
+  }
+
+  /* === TARJETAS === */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .card:hover {
+    border-color: rgba(34,214,138,0.15);
+    box-shadow: 0 0 30px rgba(34,214,138,0.05);
+  }
+
+  /* === QUÉ ES JSON === */
+  .what-json-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 700px) {
+    .what-json-grid { grid-template-columns: 1fr; }
+  }
+  .what-json-text p {
+    color: var(--fg-muted); margin-bottom: 14px; font-size: 0.95rem;
+  }
+  .what-json-text strong { color: var(--fg); }
+  .what-json-acronym {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    margin-top: 18px;
+  }
+  .acronym-letter {
+    text-align: center; padding: 14px 6px;
+    background: var(--accent-dim); border-radius: 10px;
+    border: 1px solid rgba(34,214,138,0.1);
+    transition: transform 0.3s, background 0.3s;
+    cursor: default;
+  }
+  .acronym-letter:hover {
+    transform: translateY(-3px);
+    background: rgba(34,214,138,0.2);
+  }
+  .acronym-letter .letter {
+    font-size: 1.6rem; font-weight: 700; color: var(--accent);
+    display: block;
+  }
+  .acronym-letter .meaning {
+    font-size: 0.65rem; color: var(--fg-muted);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    margin-top: 4px; display: block;
+  }
+
+  /* Diagrama de analogía */
+  .analogy-card {
+    background: var(--bg-card-alt);
+    border-radius: 12px; padding: 22px;
+    position: relative; overflow: hidden;
+  }
+  .analogy-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 4px; height: 100%; background: var(--accent);
+    border-radius: 4px 0 0 4px;
+  }
+  .analogy-label {
+    font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.1em; color: var(--accent);
+    font-weight: 600; margin-bottom: 8px;
+  }
+  .analogy-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 0; font-size: 0.88rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .analogy-row:last-child { border-bottom: none; }
+  .analogy-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; flex-shrink: 0;
+  }
+  .analogy-icon.json-icon { background: var(--accent-dim); color: var(--accent); }
+  .analogy-icon.real-icon { background: var(--warn-dim); color: var(--warn); }
+  .analogy-arrow { color: var(--fg-muted); font-size: 0.75rem; }
+
+  /* === SINTAXIS - REGLAS === */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .rule-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px;
+    position: relative; overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .rule-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(34,214,138,0.2);
+  }
+  .rule-number {
+    position: absolute; top: -6px; right: 12px;
+    font-size: 4rem; font-weight: 700; color: var(--accent);
+    opacity: 0.06; line-height: 1; pointer-events: none;
+  }
+  .rule-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--accent-dim); color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; margin-bottom: 14px;
+  }
+  .rule-card h4 {
+    font-size: 0.95rem; font-weight: 600; margin-bottom: 6px;
+  }
+  .rule-card p {
+    font-size: 0.82rem; color: var(--fg-muted); line-height: 1.55;
+  }
+
+  /* === BLOQUE DE CÓDIGO === */
+  .code-block {
+    background: #12141c;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    line-height: 1.85;
+    overflow: hidden;
+  }
+  .code-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px;
+    background: rgba(255,255,255,0.02);
+    border-bottom: 1px solid var(--border);
+  }
+  .code-dots {
+    display: flex; gap: 6px;
+  }
+  .code-dots span {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .code-dots span:nth-child(1) { background: #f45866; }
+  .code-dots span:nth-child(2) { background: #fbbf24; }
+  .code-dots span:nth-child(3) { background: #22d68a; }
+  .code-filename {
+    font-size: 0.72rem; color: var(--fg-muted);
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .code-copy {
+    background: none; border: 1px solid var(--border);
+    color: var(--fg-muted); font-size: 0.72rem;
+    padding: 4px 12px; border-radius: 6px;
+    cursor: pointer; font-family: 'Space Grotesk', sans-serif;
+    transition: all 0.3s;
+  }
+  .code-copy:hover {
+    border-color: var(--accent); color: var(--accent);
+  }
+  .code-copy.copied {
+    border-color: var(--accent); color: var(--accent);
+    background: var(--accent-dim);
+  }
+  .code-body {
+    padding: 18px 22px;
+    overflow-x: auto;
+  }
+  .code-body .line {
+    display: block; white-space: pre;
+  }
+  .code-body .ln {
+    display: inline-block;
+    width: 30px; color: #3a3f50;
+    user-select: none; text-align: right;
+    margin-right: 18px; font-size: 0.75rem;
+  }
+  /* Colores de sintaxis */
+  .ck { color: var(--key-color); }    /* clave */
+  .cs { color: var(--string-color); } /* string */
+  .cn { color: var(--number-color); } /* número */
+  .cb { color: var(--bool-color); }   /* boolean */
+  .cl { color: var(--null-color); }   /* null */
+  .cbr { color: var(--bracket-color); } /* brackets */
+  .cc { color: #4a5568; font-style: italic; } /* comentario */
+
+  /* Línea resaltada al pasar el mouse */
+  .code-body .line {
+    padding: 0 4px; border-radius: 4px;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .code-body .line:hover {
+    background: rgba(255,255,255,0.03);
+  }
+
+  /* === TIPOS DE DATOS === */
+  .types-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+  .type-chip {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 14px;
+    text-align: center; cursor: default;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .type-chip:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+  }
+  .type-chip .type-example {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 8px; display: block;
+  }
+  .type-chip .type-name {
+    font-size: 0.7rem; text-transform: uppercase;
+    letter-spacing: 0.1em; font-weight: 600;
+    display: block;
+  }
+  .type-chip.string .type-example { color: var(--string-color); }
+  .type-chip.string:hover { border-color: var(--string-color); }
+  .type-chip.string .type-name { color: var(--string-color); }
+
+  .type-chip.number .type-example { color: var(--number-color); }
+  .type-chip.number:hover { border-color: var(--number-color); }
+  .type-chip.number .type-name { color: var(--number-color); }
+
+  .type-chip.boolean .type-example { color: var(--bool-color); }
+  .type-chip.boolean:hover { border-color: var(--bool-color); }
+  .type-chip.boolean .type-name { color: var(--bool-color); }
+
+  .type-chip.null .type-example { color: var(--null-color); }
+  .type-chip.null:hover { border-color: var(--null-color); }
+  .type-chip.null .type-name { color: var(--null-color); }
+
+  .type-chip.array .type-example { color: var(--accent); }
+  .type-chip.array:hover { border-color: var(--accent); }
+  .type-chip.array .type-name { color: var(--accent); }
+
+  .type-chip.object .type-example { color: var(--key-color); }
+  .type-chip.object:hover { border-color: var(--key-color); }
+  .type-chip.object .type-name { color: var(--key-color); }
+
+  /* === ESTRUCTURAS === */
+  .structures-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+  }
+  @media (max-width: 700px) {
+    .structures-grid { grid-template-columns: 1fr; }
+  }
+  .structure-label {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 12px;
+  }
+  .structure-label .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; font-weight: 600;
+    padding: 3px 10px; border-radius: 6px;
+  }
+  .structure-label .tag.obj-tag {
+    background: rgba(94,234,212,0.12); color: var(--key-color);
+  }
+  .structure-label .tag.arr-tag {
+    background: var(--accent-dim); color: var(--accent);
+  }
+  .structure-label span {
+    font-size: 0.82rem; color: var(--fg-muted);
+  }
+
+  /* === ANOTACIONES === */
+  .annotation {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px 16px; border-radius: 10px;
+    margin-top: 14px; font-size: 0.82rem;
+  }
+  .annotation i { margin-top: 3px; flex-shrink: 0; font-size: 0.85rem; }
+  .annotation.tip {
+    background: var(--accent-dim);
+    border: 1px solid rgba(34,214,138,0.15);
+    color: #a7f3d0;
+  }
+  .annotation.tip i { color: var(--accent); }
+  .annotation.warning {
+    background: var(--warn-dim);
+    border: 1px solid rgba(245,158,66,0.15);
+    color: #fde68a;
+  }
+  .annotation.warning i { color: var(--warn); }
+
+  /* === BUENAS PRÁCTICAS - DO/DON'T === */
+  .practices-list {
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .practice-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+  }
+  @media (max-width: 700px) {
+    .practice-row { grid-template-columns: 1fr; }
+  }
+  .practice-card {
+    border-radius: 10px; padding: 18px;
+    font-size: 0.82rem;
+  }
+  .practice-card.do {
+    background: rgba(34,214,138,0.05);
+    border: 1px solid rgba(34,214,138,0.12);
+  }
+  .practice-card.dont {
+    background: rgba(244,88,102,0.05);
+    border: 1px solid rgba(244,88,102,0.12);
+  }
+  .practice-tag {
+    font-size: 0.65rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+  }
+  .practice-card.do .practice-tag { color: var(--accent); }
+  .practice-card.dont .practice-tag { color: var(--error); }
+  .practice-card .practice-desc {
+    color: var(--fg-muted); margin-bottom: 10px; line-height: 1.5;
+  }
+  .practice-card code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; display: block;
+    padding: 8px 12px; border-radius: 6px;
+    line-height: 1.7;
+  }
+  .practice-card.do code {
+    background: rgba(34,214,138,0.06);
+  }
+  .practice-card.dont code {
+    background: rgba(244,88,102,0.06);
+  }
+
+  /* === VALIDADOR INTERACTIVO === */
+  .validator-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px;
+  }
+  .validator-textarea {
+    width: 100%; min-height: 160px;
+    background: #12141c; color: var(--fg);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem; line-height: 1.7;
+    resize: vertical; outline: none;
+    transition: border-color 0.3s;
+  }
+  .validator-textarea:focus {
+    border-color: var(--accent);
+  }
+  .validator-btn {
+    margin-top: 14px;
+    background: var(--accent); color: #0f1117;
+    border: none; border-radius: 10px;
+    padding: 12px 28px; font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .validator-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--accent-glow);
+  }
+  .validator-btn:active { transform: translateY(0); }
+  .validator-result {
+    margin-top: 16px; padding: 14px 18px;
+    border-radius: 10px; font-size: 0.85rem;
+    display: none; line-height: 1.6;
+  }
+  .validator-result.valid {
+    display: block;
+    background: rgba(34,214,138,0.08);
+    border: 1px solid rgba(34,214,138,0.2);
+    color: #a7f3d0;
+  }
+  .validator-result.invalid {
+    display: block;
+    background: rgba(244,88,102,0.08);
+    border: 1px solid rgba(244,88,102,0.2);
+    color: #fca5a5;
+  }
+
+  /* === REFERENCIA RÁPIDA / CHEATSHEET === */
+  .cheatsheet-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  .cheat-item {
+    display: flex; align-items: center; gap: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    transition: border-color 0.3s;
+  }
+  .cheat-item:hover { border-color: rgba(34,214,138,0.15); }
+  .cheat-icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; flex-shrink: 0;
+  }
+  .cheat-icon.green { background: var(--accent-dim); color: var(--accent); }
+  .cheat-icon.amber { background: var(--warn-dim); color: var(--warn); }
+  .cheat-icon.pink { background: rgba(244,114,182,0.12); color: var(--bool-color); }
+  .cheat-icon.teal { background: rgba(94,234,212,0.12); color: var(--key-color); }
+  .cheat-text h5 { font-size: 0.85rem; font-weight: 600; margin-bottom: 2px; }
+  .cheat-text p { font-size: 0.75rem; color: var(--fg-muted); }
+
+  /* === FLUJO VISUAL / LÍNEA DE CONEXIÓN === */
+  .flow-connector {
+    display: flex; justify-content: center; padding: 10px 0;
+  }
+  .flow-line {
+    width: 2px; height: 40px;
+    background: linear-gradient(to bottom, var(--accent), transparent);
+    border-radius: 2px;
+  }
+
+  /* === TOOLTIP === */
+  .tooltip-wrap {
+    position: relative; cursor: help;
+    border-bottom: 1px dashed var(--fg-muted);
+  }
+  .tooltip-wrap .tooltip-box {
+    position: absolute; bottom: calc(100% + 8px); left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: #2a2d3a; color: var(--fg);
+    font-size: 0.72rem; padding: 8px 14px;
+    border-radius: 8px; white-space: nowrap;
+    pointer-events: none; opacity: 0;
+    transition: opacity 0.2s, transform 0.2s;
+    z-index: 10; font-weight: 400;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+  }
+  .tooltip-wrap:hover .tooltip-box {
+    opacity: 1; transform: translateX(-50%) scale(1);
+  }
+
+  /* === FOOTER === */
+  .infographic-footer {
+    text-align: center; padding: 40px 0 20px;
+    border-top: 1px solid var(--border);
+    margin-top: 20px;
+  }
+  .infographic-footer p {
+    font-size: 0.78rem; color: var(--fg-muted);
+  }
+
+  /* === PROGRESS BAR (superior) === */
+  .progress-bar {
+    position: fixed; top: 0; left: 0; z-index: 100;
+    height: 3px; background: var(--accent);
+    width: 0%; transition: width 0.1s linear;
+    box-shadow: 0 0 10px var(--accent-glow);
+  }
+
+  /* === ANIMACIONES === */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .section { opacity: 1; transform: none; transition: none; }
+    .rule-card, .type-chip, .acronym-letter { transition: none; }
+    .progress-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<div class="bg-grid"></div>
+<div class="bg-glow bg-glow-1"></div>
+<div class="bg-glow bg-glow-2"></div>
+
+<main class="infographic">
+
+  <!-- ===== HERO ===== -->
+  <header class="hero section">
+    <div class="hero-braces left">{</div>
+    <div class="hero-braces right">}</div>
+    <div class="hero-badge"><i class="fas fa-code"></i> Infografia Interactiva</div>
+    <h1>Todo sobre <span class="accent">JSON</span></h1>
+    <p class="hero-sub">Guia visual para entender el formato mas utilizado en el intercambio de datos en la web</p>
+  </header>
+
+  <!-- ===== 1. QUE ES JSON ===== -->
+  <section class="section" id="sec-que">
+    <div class="section-label"><i class="fas fa-circle"></i> Fundamento</div>
+    <h2 class="section-title">Que es JSON</h2>
+    <p class="section-desc">Antes de escribir JSON, necesitamos entender que es y para que sirve.</p>
+
+    <div class="what-json-grid">
+      <div class="card">
+        <div class="what-json-text">
+          <p><strong>JSON</strong> (JavaScript Object Notation) es un formato ligero de intercambio de datos, facil de leer y escribir para humanos, y facil de procesar para maquinas.</p>
+          <p>Nacio en <strong>2001</strong> como un subconjunto de JavaScript, y en <strong>2013</strong> se convirtio en el estandar <strong>ECMA-404</strong>, independiente de cualquier lenguaje.</p>
+          <p>Hoy es el formato dominante para
+            <span class="tooltip-wrap">APIs REST
+              <span class="tooltip-box">Interfaz de programacion de aplicaciones</span>
+            </span>,
+            archivos de configuracion y almacenamiento de datos.</p>
+        </div>
+        <div class="what-json-acronym">
+          <div class="acronym-letter"><span class="letter">J</span><span class="meaning">JavaScript</span></div>
+          <div class="acronym-letter"><span class="letter">O</span><span class="meaning">Object</span></div>
+          <div class="acronym-letter"><span class="letter">N</span><span class="meaning">Notation</span></div>
+          <div class="acronym-letter"><span class="letter">&nbsp;</span><span class="meaning">&nbsp;</span></div>
+        </div>
+      </div>
+      <div class="analogy-card">
+        <div class="analogy-label"><i class="fas fa-lightbulb"></i> Analogia: JSON es como una ficha de registro</div>
+        <div class="analogy-row">
+          <div class="analogy-icon json-icon"><i class="fas fa-key"></i></div>
+          <span><strong>Clave</strong> ("nombre")</span>
+          <span class="analogy-arrow"><i class="fas fa-arrow-right"></i></span>
+          <div class="analogy-icon real-icon"><i class="fas fa-tag"></i></div>
+          <span>Campo del formulario</span>
+        </div>
+        <div class="analogy-row">
+          <div class="analogy-icon json-icon"><i class="fas fa-quote-right"></i></div>
+          <span><strong>Valor</strong> ("Ana")</span>
+          <span class="analogy-arrow"><i class="fas fa-arrow-right"></i></span>
+          <div class="analogy-icon real-icon"><i class="fas fa-pen"></i></div>
+          <span>Dato escrito por la persona</span>
+        </div>
+        <div class="analogy-row">
+          <div class="analogy-icon json-icon"><i class="fas fa-brackets-curly fa-sm">{"}"}</i></div>
+          <span><strong>Objeto</strong> {...}</span>
+          <span class="analogy-arrow"><i class="fas fa-arrow-right"></i></span>
+          <div class="analogy-icon real-icon"><i class="fas fa-file-alt"></i></div>
+          <span>Ficha completa</span>
+        </div>
+        <div class="analogy-row">
+          <div class="analogy-icon json-icon"><i class="fas fa-list"></i></div>
+          <span><strong>Arreglo</strong> [...]</span>
+          <span class="analogy-arrow"><i class="fas fa-arrow-right"></i></span>
+          <div class="analogy-icon real-icon"><i class="fas fa-folder-open"></i></div>
+          <span>Carpeta con multiples fichas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 2. SINTAXIS - REGLAS DE ORO ===== -->
+  <section class="section" id="sec-sintaxis">
+    <div class="section-label"><i class="fas fa-circle"></i> Sintaxis</div>
+    <h2 class="section-title">Las 6 reglas de oro</h2>
+    <p class="section-desc">Si sigues estas reglas al pie de la letra, tu JSON sera siempre valido.</p>
+
+    <div class="rules-grid">
+      <div class="rule-card">
+        <div class="rule-number">1</div>
+        <div class="rule-icon"><i class="fas fa-quote-right"></i></div>
+        <h4>Las claves SIEMPRE van entre comillas dobles</h4>
+        <p>"nombre", "edad", "activo" — Nunca comillas simples, nunca sin comillas.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-number">2</div>
+        <div class="rule-icon"><i class="fas fa-grip-lines"></i></div>
+        <h4>Pares clave-valor separados por dos puntos</h4>
+        <p>"clave": valor — El dos puntos es el conector obligatorio.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-number">3</div>
+        <div class="rule-icon"><i class="fas fa-comma"></i></div>
+        <h4>Comas separan pares, NUNCA al final</h4>
+        <p>Despues de cada par va una coma, excepto el ultimo. JSON no permite trailing commas.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-number">4</div>
+        <div class="rule-icon"><i class="fas fa-layer-group"></i></div>
+        <h4>Objetos con llaves, arreglos con corchetes</h4>
+        <p>{ } para colecciones de pares clave-valor. [ ] para listas ordenadas de valores.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-number">5</div>
+        <div class="rule-icon"><i class="fas fa-ban"></i></div>
+        <h4>Sin comentarios, sin funciones, sin variables</h4>
+        <p>JSON es puro dato. No existe // ni /* */, no hay funciones ni expresiones.</p>
+      </div>
+      <div class="rule-card">
+        <div class="rule-number">6</div>
+        <div class="rule-icon"><i class="fas fa-check-double"></i></div>
+        <h4>Solo 6 tipos de datos validos</h4>
+        <p>String, Number, Boolean, null, Object, Array. Nada mas, nada menos.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 3. EJEMPLO COMPLETO ANOTADO ===== -->
+  <section class="section" id="sec-ejemplo">
+    <div class="section-label"><i class="fas fa-circle"></i> Ejemplo Anotado</div>
+    <h2 class="section-title">Un JSON completo, paso a paso</h2>
+    <p class="section-desc">Lee cada linea con atencion: los colores indican el tipo de dato.</p>
+
+    <div class="code-block" id="mainExample">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-filename">alumno.json</span>
+        <button class="code-copy" onclick="copyCode('mainExample')"><i class="fas fa-copy"></i> Copiar</button>
+      </div>
+      <div class="code-body">
+<span class="line"><span class="ln">1</span><span class="cbr">{</span></span>
+<span class="line"><span class="ln">2</span>  <span class="cc">// Este es un OBJETO principal</span></span>
+<span class="line"><span class="ln">3</span>  <span class="ck">"nombre"</span><span class="cbr">:</span> <span class="cs">"Maria Garcia"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">4</span>  <span class="ck">"edad"</span><span class="cbr">:</span> <span class="cn">21</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">5</span>  <span class="ck">"esActivo"</span><span class="cbr">:</span> <span class="cb">true</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">6</span>  <span class="ck">"promedio"</span><span class="cbr">:</span> <span class="cn">9.5</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">7</span>  <span class="ck">"carrera"</span><span class="cbr">:</span> <span class="cl">null</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">8</span></span>
+<span class="line"><span class="ln">9</span>  <span class="cc">// Un ARREGLO de objetos anidados</span></span>
+<span class="line"><span class="ln">10</span>  <span class="ck">"materias"</span><span class="cbr">:</span> <span class="cbr">[</span></span>
+<span class="line"><span class="ln">11</span>    <span class="cbr">{</span></span>
+<span class="line"><span class="ln">12</span>      <span class="ck">"nombre"</span><span class="cbr">:</span> <span class="cs">"Programacion"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">13</span>      <span class="ck">"calificacion"</span><span class="cbr">:</span> <span class="cn">10</span></span>
+<span class="line"><span class="ln">14</span>    <span class="cbr">}</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">15</span>    <span class="cbr">{</span></span>
+<span class="line"><span class="ln">16</span>      <span class="ck">"nombre"</span><span class="cbr">:</span> <span class="cs">"Matematicas"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">17</span>      <span class="ck">"calificacion"</span><span class="cbr">:</span> <span class="cn">9</span></span>
+<span class="line"><span class="ln">18</span>    <span class="cbr">}</span></span>
+<span class="line"><span class="ln">19</span>  <span class="cbr">]</span></span>
+<span class="line"><span class="ln">20</span><span class="cbr">}</span></span>
+      </div>
+    </div>
+
+    <div class="annotation tip">
+      <i class="fas fa-info-circle"></i>
+      <div><strong>Nota:</strong> Los comentarios (<code>//</code>) en realidad NO son validos en JSON puro. Los usamos aqui solo con fines educativos. En JSON real, debes eliminarlos.</div>
+    </div>
+
+    <!-- Leyenda de colores -->
+    <div style="display:flex; flex-wrap:wrap; gap:16px; margin-top:18px; justify-content:center;">
+      <span style="font-size:0.75rem; display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--key-color);display:inline-block;"></span> <span style="color:var(--key-color);">Clave</span></span>
+      <span style="font-size:0.75rem; display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--string-color);display:inline-block;"></span> <span style="color:var(--string-color);">String</span></span>
+      <span style="font-size:0.75rem; display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--number-color);display:inline-block;"></span> <span style="color:var(--number-color);">Number</span></span>
+      <span style="font-size:0.75rem; display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--bool-color);display:inline-block;"></span> <span style="color:var(--bool-color);">Boolean</span></span>
+      <span style="font-size:0.75rem; display:flex; align-items:center; gap:6px;"><span style="width:12px;height:12px;border-radius:3px;background:var(--null-color);display:inline-block;"></span> <span style="color:var(--null-color);">Null</span></span>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 4. TIPOS DE DATOS ===== -->
+  <section class="section" id="sec-tipos">
+    <div class="section-label"><i class="fas fa-circle"></i> Tipos de Datos</div>
+    <h2 class="section-title">Los 6 tipos que acepta JSON</h2>
+    <p class="section-desc">JSON no admite fechas, funciones, undefined ni tipos personalizados. Solo estos seis.</p>
+
+    <div class="types-grid">
+      <div class="type-chip string">
+        <span class="type-example">"texto"</span>
+        <span class="type-name">String</span>
+      </div>
+      <div class="type-chip number">
+        <span class="type-example">42</span>
+        <span class="type-name">Number</span>
+      </div>
+      <div class="type-chip boolean">
+        <span class="type-example">true</span>
+        <span class="type-name">Boolean</span>
+      </div>
+      <div class="type-chip null">
+        <span class="type-example">null</span>
+        <span class="type-name">Null</span>
+      </div>
+      <div class="type-chip array">
+        <span class="type-example">[ ... ]</span>
+        <span class="type-name">Array</span>
+      </div>
+      <div class="type-chip object">
+        <span class="type-example">{ ... }</span>
+        <span class="type-name">Object</span>
+      </div>
+    </div>
+
+    <div class="annotation warning" style="margin-top:20px;">
+      <i class="fas fa-exclamation-triangle"></i>
+      <div><strong>Cuidado:</strong> <code>undefined</code>, <code>NaN</code>, <code>Infinity</code>, funciones ni comentarios son validos en JSON. Si tu lenguaje los genera, debes transformarlos antes de serializar.</div>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 5. ESTRUCTURAS ===== -->
+  <section class="section" id="sec-estructuras">
+    <div class="section-label"><i class="fas fa-circle"></i> Estructuras</div>
+    <h2 class="section-title">Objeto vs Arreglo</h2>
+    <p class="section-desc">Estos son los dos contenedores fundamentales de JSON. Entender la diferencia es clave.</p>
+
+    <div class="structures-grid">
+      <!-- Objeto -->
+      <div>
+        <div class="structure-label">
+          <span class="tag obj-tag">{ }</span>
+          <span>Objeto — Coleccion de pares clave-valor (sin orden garantizado)</span>
+        </div>
+        <div class="code-block" id="objExample">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-filename">objeto.json</span>
+            <button class="code-copy" onclick="copyCode('objExample')"><i class="fas fa-copy"></i> Copiar</button>
+          </div>
+          <div class="code-body">
+<span class="line"><span class="ln">1</span><span class="cbr">{</span></span>
+<span class="line"><span class="ln">2</span>  <span class="ck">"id"</span><span class="cbr">:</span> <span class="cn">1</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">3</span>  <span class="ck">"nombre"</span><span class="cbr">:</span> <span class="cs">"Calculo"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">4</span>  <span class="ck">"creditos"</span><span class="cbr">:</span> <span class="cn">8</span></span>
+<span class="line"><span class="ln">5</span><span class="cbr">}</span></span>
+          </div>
+        </div>
+        <div class="annotation tip">
+          <i class="fas fa-lightbulb"></i>
+          <div>Cada clave es unica. Si se repite, el ultimo valor sobreescribe a los anteriores.</div>
+        </div>
+      </div>
+      <!-- Arreglo -->
+      <div>
+        <div class="structure-label">
+          <span class="tag arr-tag">[ ]</span>
+          <span>Arreglo — Lista ordenada de valores (puede ser de cualquier tipo)</span>
+        </div>
+        <div class="code-block" id="arrExample">
+          <div class="code-header">
+            <div class="code-dots"><span></span><span></span><span></span></div>
+            <span class="code-filename">arreglo.json</span>
+            <button class="code-copy" onclick="copyCode('arrExample')"><i class="fas fa-copy"></i> Copiar</button>
+          </div>
+          <div class="code-body">
+<span class="line"><span class="ln">1</span><span class="cbr">[</span></span>
+<span class="line"><span class="ln">2</span>  <span class="cs">"Calculo"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">3</span>  <span class="cs">"Algebra"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">4</span>  <span class="cs">"Programacion"</span></span>
+<span class="line"><span class="ln">5</span><span class="cbr">]</span></span>
+          </div>
+        </div>
+        <div class="annotation tip">
+          <i class="fas fa-lightbulb"></i>
+          <div>Los indices empiezan en 0. No tiene claves, solo posicion. Puedes mezclar tipos dentro del mismo arreglo.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 6. ANIDAMIENTO ===== -->
+  <section class="section" id="sec-anidamiento">
+    <div class="section-label"><i class="fas fa-circle"></i> Anidamiento</div>
+    <h2 class="section-title">Estructuras dentro de estructuras</h2>
+    <p class="section-desc">La verdadera potencia de JSON esta en combinar objetos y arreglos a cualquier profundidad.</p>
+
+    <div class="code-block" id="nestedExample">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-filename">universidad.json</span>
+        <button class="code-copy" onclick="copyCode('nestedExample')"><i class="fas fa-copy"></i> Copiar</button>
+      </div>
+      <div class="code-body">
+<span class="line"><span class="ln">1</span><span class="cbr">{</span></span>
+<span class="line"><span class="ln">2</span>  <span class="ck">"universidad"</span><span class="cbr">:</span> <span class="cs">"UNAM"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">3</span>  <span class="ck">"carreras"</span><span class="cbr">:</span> <span class="cbr">[</span>                     <span class="cc">// Arreglo de objetos</span></span>
+<span class="line"><span class="ln">4</span>    <span class="cbr">{</span></span>
+<span class="line"><span class="ln">5</span>      <span class="ck">"nombre"</span><span class="cbr">:</span> <span class="cs">"Ingenieria"</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">6</span>      <span class="ck">"semestres"</span><span class="cbr">:</span> <span class="cn">8</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">7</span>      <span class="ck">"materias"</span><span class="cbr">:</span> <span class="cbr">[</span>               <span class="cc">// Arreglo dentro de objeto</span></span>
+<span class="line"><span class="ln">8</span>        <span class="cbr">{</span> <span class="ck">"clave"</span><span class="cbr">:</span> <span class="cs">"IF001"</span><span class="cbr">,</span> <span class="ck">"nombre"</span><span class="cbr">:</span> <span class="cs">"Fisica"</span> <span class="cbr">}</span><span class="cbr">,</span></span>
+<span class="line"><span class="ln">9</span>        <span class="cbr">{</span> <span class="ck">"clave"</span><span class="cbr">:</span> <span class="cs">"IF002"</span><span class="cbr">,</span> <span class="ck">"nombre"</span><span class="cbr">:</span> <span class="cs">"Quimica"</span> <span class="cbr">}</span></span>
+<span class="line"><span class="ln">10</span>      <span class="cbr">]</span></span>
+<span class="line"><span class="ln">11</span>    <span class="cbr">}</span></span>
+<span class="line"><span class="ln">12</span>  <span class="cbr">]</span></span>
+<span class="line"><span class="ln">13</span><span class="cbr">}</span></span>
+      </div>
+    </div>
+
+    <div class="annotation tip">
+      <i class="fas fa-sitemap"></i>
+      <div><strong>Regla practica:</strong> Piensa en la estructura como un arbol. El objeto raiz es el tronco, los arreglos son las ramas, y los valores simples son las hojas. Evita mas de 4 niveles de profundidad para mantener legibilidad.</div>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 7. BUENAS PRACTICAS ===== -->
+  <section class="section" id="sec-practicas">
+    <div class="section-label"><i class="fas fa-circle"></i> Buenas Practicas</div>
+    <h2 class="section-title">Hazlo bien vs Hazlo mal</h2>
+    <p class="section-desc">Compara los errores comunes con las formas correctas de escribir JSON.</p>
+
+    <div class="practices-list">
+      <!-- Práctica 1 -->
+      <div class="practice-row">
+        <div class="practice-card do">
+          <div class="practice-tag"><i class="fas fa-check-circle"></i> Hazlo asi</div>
+          <div class="practice-desc">Claves siempre con comillas dobles</div>
+          <code><span style="color:var(--key-color)">"nombre"</span>: <span style="color:var(--string-color)">"Carlos"</span></code>
+        </div>
+        <div class="practice-card dont">
+          <div class="practice-tag"><i class="fas fa-times-circle"></i> Evita esto</div>
+          <div class="practice-desc">Sin comillas o comillas simples</div>
+          <code>nombre: <span style="color:var(--error)">"Carlos"</span>  <span style="color:var(--error)">o</span>  <span style="color:var(--error)">'nombre': "Carlos"</span></code>
+        </div>
+      </div>
+      <!-- Práctica 2 -->
+      <div class="practice-row">
+        <div class="practice-card do">
+          <div class="practice-tag"><i class="fas fa-check-circle"></i> Hazlo asi</div>
+          <div class="practice-desc">Sin coma despues del ultimo elemento</div>
+          <code>{
+  <span style="color:var(--key-color)">"a"</span>: <span class="cn">1</span>,
+  <span style="color:var(--key-color)">"b"</span>: <span class="cn">2</span>
+}</code>
+        </div>
+        <div class="practice-card dont">
+          <div class="practice-tag"><i class="fas fa-times-circle"></i> Evita esto</div>
+          <div class="practice-desc">Trailing comma (coma al final)</div>
+          <code>{
+  <span style="color:var(--key-color)">"a"</span>: <span class="cn">1</span>,
+  <span style="color:var(--key-color)">"b"</span>: <span class="cn">2</span>,  <span style="color:var(--error)">← ERROR</span>
+}</code>
+        </div>
+      </div>
+      <!-- Práctica 3 -->
+      <div class="practice-row">
+        <div class="practice-card do">
+          <div class="practice-tag"><i class="fas fa-check-circle"></i> Hazlo asi</div>
+          <div class="practice-desc">Usa null para valores vacios</div>
+          <code><span style="color:var(--key-color)">"telefono"</span>: <span style="color:var(--null-color)">null</span></code>
+        </div>
+        <div class="practice-card dont">
+          <div class="practice-tag"><i class="fas fa-times-circle"></i> Evita esto</div>
+          <div class="practice-desc">undefined o vacio sin null</div>
+          <code><span style="color:var(--key-color)">"telefono"</span>: <span style="color:var(--error)">undefined</span>
+<span style="color:var(--key-color)">"telefono"</span>: <span style="color:var(--error)">""</span> <span style="color:var(--error)">(si no aplica)</span></code>
+        </div>
+      </div>
+      <!-- Práctica 4 -->
+      <div class="practice-row">
+        <div class="practice-card do">
+          <div class="practice-tag"><i class="fas fa-check-circle"></i> Hazlo asi</div>
+          <div class="practice-desc">Nombres de clave descriptivos y consistentes</div>
+          <code><span style="color:var(--key-color)">"primerNombre"</span>: <span style="color:var(--string-color)">"Ana"</span>
+<span style="color:var(--key-color)">"apellidoPaterno"</span>: <span style="color:var(--string-color)">"Lopez"</span></code>
+        </div>
+        <div class="practice-card dont">
+          <div class="practice-tag"><i class="fas fa-times-circle"></i> Evita esto</div>
+          <div class="practice-desc">Claves ambiguas o inconsistentes</div>
+          <code><span style="color:var(--key-color)">"nom"</span>: <span style="color:var(--string-color)">"Ana"</span>
+<span style="color:var(--key-color)">"apellido_paterno"</span>: <span style="color:var(--string-color)">"Lopez"</span>
+<span style="color:var(--key-color)">"ApellidoMaterno"</span>: ...</code>
+        </div>
+      </div>
+      <!-- Práctica 5 -->
+      <div class="practice-row">
+        <div class="practice-card do">
+          <div class="practice-tag"><i class="fas fa-check-circle"></i> Hazlo asi</div>
+          <div class="practice-desc">Fechas como strings en formato ISO 8601</div>
+          <code><span style="color:var(--key-color)">"fechaNacimiento"</span>: <span style="color:var(--string-color)">"2003-05-15"</span></code>
+        </div>
+        <div class="practice-card dont">
+          <div class="practice-tag"><i class="fas fa-times-circle"></i> Evita esto</div>
+          <div class="practice-desc">Fechas como objetos Date o formatos raros</div>
+          <code><span style="color:var(--key-color)">"fecha"</span>: <span style="color:var(--error)">new Date()</span>
+<span style="color:var(--key-color)">"fecha"</span>: <span style="color:var(--string-color)">"15/05/2003"</span> <span style="color:var(--error)">(ambiguo)</span></code>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 8. VALIDADOR INTERACTIVO ===== -->
+  <section class="section" id="sec-validador">
+    <div class="section-label"><i class="fas fa-circle"></i> Practica</div>
+    <h2 class="section-title">Validador de JSON</h2>
+    <p class="section-desc">Escribe o pega tu JSON aqui y verifica si es valido. Aprende de los errores.</p>
+
+    <div class="validator-card">
+      <textarea class="validator-textarea" id="jsonInput" spellcheck="false" placeholder='{
+  "nombre": "Tu nombre",
+  "edad": 20
+}'></textarea>
+      <button class="validator-btn" onclick="validateJSON()">
+        <i class="fas fa-check-circle"></i> Validar JSON
+      </button>
+      <div class="validator-result" id="validatorResult"></div>
+    </div>
+  </section>
+
+  <div class="flow-connector"><div class="flow-line"></div></div>
+
+  <!-- ===== 9. CHEATSHEET ===== -->
+  <section class="section" id="sec-cheatsheet">
+    <div class="section-label"><i class="fas fa-circle"></i> Referencia Rapida</div>
+    <h2 class="section-title">Cheatsheet JSON</h2>
+    <p class="section-desc">Todo lo esencial en un vistazo.</p>
+
+    <div class="cheatsheet-grid">
+      <div class="cheat-item">
+        <div class="cheat-icon green"><i class="fas fa-file-code"></i></div>
+        <div class="cheat-text">
+          <h5>Extension</h5>
+          <p>.json — siempre en minusculas</p>
+        </div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-icon amber"><i class="fas fa-envelope"></i></div>
+        <div class="cheat-text">
+          <h5>MIME Type</h5>
+          <p>application/json</p>
+        </div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-icon teal"><i class="fas fa-code"></i></div>
+        <div class="cheat-text">
+          <h5>Encoding</h5>
+          <p>UTF-8 (obligatorio)</p>
+        </div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-icon pink"><i class="fas fa-text-height"></i></div>
+        <div class="cheat-text">
+          <h5>Indentacion</h5>
+          <p>2 espacios (recomendado)</p>
+        </div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-icon green"><i class="fas fa-exchange-alt"></i></div>
+        <div class="cheat-text">
+          <h5>JavaScript</h5>
+          <p>JSON.parse() / JSON.stringify()</p>
+        </div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-icon amber"><i class="fas fa-shield-alt"></i></div>
+        <div class="cheat-text">
+          <h5>Seguridad</h5>
+          <p>Nunca usar eval() para parsear JSON</p>
+        </div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-icon teal"><i class="fas fa-weight-hanging"></i></div>
+        <div class="cheat-text">
+          <h5>Tamano maximo</h5>
+          <p>Sin limite oficial, pero APIs suelen limitar a 1-10 MB</p>
+        </div>
+      </div>
+      <div class="cheat-item">
+        <div class="cheat-icon pink"><i class="fas fa-project-diagram"></i></div>
+        <div class="cheat-text">
+          <h5>Profundidad</h5>
+          <p>Recomendado: maximo 4 niveles de anidamiento</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="infographic-footer">
+    <p>Infografia interactiva sobre JSON — Material didactico para estudiantes</p>
+  </footer>
+
+</main>
+
+<script>
+  // === SCROLL REVEAL: secciones aparecen al hacer scroll ===
+  const sections = document.querySelectorAll('.section');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+
+  sections.forEach(s => observer.observe(s));
+
+  // === BARRA DE PROGRESO DE LECTURA ===
+  const progressBar = document.getElementById('progressBar');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.width = progress + '%';
+  }, { passive: true });
+
+  // === COPIAR CODIGO ===
+  function copyCode(blockId) {
+    const block = document.getElementById(blockId);
+    const codeBody = block.querySelector('.code-body');
+    // Extraer solo el texto sin numeros de linea ni spans HTML
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = codeBody.innerHTML;
+    // Remover spans de linea numerica
+    tempDiv.querySelectorAll('.ln').forEach(ln => ln.remove());
+    const text = tempDiv.textContent || tempDiv.innerText;
+
+    navigator.clipboard.writeText(text.trim()).then(() => {
+      const btn = block.querySelector('.code-copy');
+      btn.classList.add('copied');
+      btn.innerHTML = '<i class="fas fa-check"></i> Copiado';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = '<i class="fas fa-copy"></i> Copiar';
+      }, 2000);
+    });
+  }
+
+  // === VALIDADOR DE JSON ===
+  function validateJSON() {
+    const input = document.getElementById('jsonInput').value.trim();
+    const result = document.getElementById('validatorResult');
+
+    if (!input) {
+      result.className = 'validator-result invalid';
+      result.innerHTML = '<i class="fas fa-exclamation-circle"></i> El campo esta vacio. Escribe o pega algun JSON para validar.';
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(input);
+      result.className = 'validator-result valid';
+
+      // Analisis del JSON parseado
+      const type = Array.isArray(parsed) ? 'Arreglo' : typeof parsed === 'object' && parsed !== null ? 'Objeto' : typeof parsed;
+      const keys = typeof parsed === 'object' && parsed !== null ? Object.keys(parsed) : [];
+      const depth = getDepth(parsed);
+
+      let info = `<i class="fas fa-check-circle"></i> <strong>JSON valido.</strong><br>`;
+      info += `Tipo raiz: <strong>${type}</strong>`;
+      if (keys.length > 0) {
+        info += ` | Claves: <strong>${keys.length}</strong> (${keys.map(k => '"' + k + '"').join(', ')})`;
+      }
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        info += ` | Elementos: <strong>${parsed.length}</strong>`;
+      }
+      info += ` | Profundidad: <strong>${depth}</strong> nivel${depth !== 1 ? 'es' : ''}`;
+
+      result.innerHTML = info;
+    } catch (e) {
+      result.className = 'validator-result invalid';
+
+      // Intentar dar un mensaje de error mas amigable
+      const msg = e.message;
+      let friendly = '';
+
+      if (msg.includes('Unexpected token') && msg.includes('position')) {
+        const posMatch = msg.match(/position\s+(\d+)/);
+        const pos = posMatch ? parseInt(posMatch[1]) : null;
+        friendly = '<i class="fas fa-times-circle"></i> <strong>Token inesperado</strong>';
+        if (pos !== null && pos < input.length) {
+          const start = Math.max(0, pos - 10);
+          const end = Math.min(input.length, pos + 10);
+          const snippet = input.substring(start, end).replace(/\n/g, '↵');
+          friendly += `<br>Alrededor de la posicion ${pos}: <code>"...${snippet}..."</code>`;
+        }
+        if (msg.includes(',')) {
+          friendly += '<br><strong>Posible causa:</strong> Coma de mas al final de un objeto o arreglo (trailing comma).';
+        }
+      } else if (msg.includes('Unexpected end')) {
+        friendly = '<i class="fas fa-times-circle"></i> <strong>JSON incompleto.</strong> Falta cerrar una llave { } o corchete [ ].';
+      } else if (msg.includes('Expected')) {
+        friendly = `<i class="fas fa-times-circle"></i> <strong>Error de sintaxis:</strong> ${msg}`;
+        if (msg.includes('"')) {
+          friendly += '<br><strong>Posible causa:</strong> Clave sin comillas dobles.';
+        }
+      } else {
+        friendly = `<i class="fas fa-times-circle"></i> <strong>Error:</strong> ${msg}`;
+      }
+
+      result.innerHTML = friendly;
+    }
+  }
+
+  // Calcular profundidad maxima de un JSON
+  function getDepth(obj) {
+    if (typeof obj !== 'object' || obj === null) return 0;
+    let maxDepth = 0;
+    const values = Array.isArray(obj) ? obj : Object.values(obj);
+    for (const val of values) {
+      if (typeof val === 'object' && val !== null) {
+        const d = getDepth(val);
+        if (d > maxDepth) maxDepth = d;
+      }
+    }
+    return maxDepth + 1;
+  }
+
+  // === Permitir validar con Ctrl+Enter en el textarea ===
+  document.getElementById('jsonInput').addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      validateJSON();
+    }
+  });
+
+  // === PRE-RELLENAR el textarea con un JSON de ejemplo con error sutil para que el alumno lo descubra ===
+  // Se deja vacio para que el alumno escriba, pero con el placeholder como guia
+</script>
+</body>
+</html>
